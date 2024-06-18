@@ -1,7 +1,8 @@
 import { Layer, WebGL } from "./webgl";
 import { Pass } from "./pass";
-import { Script } from "../script";
 import { Renderer } from "./renderer";
+import { PerspectiveCamera } from "./camera";
+import { Registry } from "./registry";
 
 export class Graphics implements Layer
 {
@@ -11,15 +12,8 @@ export class Graphics implements Layer
         this.gl = webgl.gl;
     }
 
-    public SetAnimationLoop() 
-    {
-        
-    }
-
-    public Update(script : Script) : void 
+    public Update(registry : Registry, camera : PerspectiveCamera, ) : void 
     {        
-        script.Update();
-
         this.renderer.Render();
     }   
 

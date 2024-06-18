@@ -1,6 +1,3 @@
-import { Graphics } from "./graphics";
-import { Script } from "../script";
-import { Sizes } from "./sizes";
 
 /**
  * @brief Simple interface to force clases to handle window resizing.
@@ -41,9 +38,6 @@ export class WebGL implements Layer
         {
             throw new Error('OES_texture_float_linear is not supported')
         };
-
-        this.sizes = new Sizes();
-        this.script = new Script();
     }
     
     public OnResize() : void 
@@ -51,17 +45,6 @@ export class WebGL implements Layer
 
     }
 
-    public Run() : void 
-    {
-        if(!this.graphics) 
-        {
-            this.graphics = new Graphics();
-        }
-
-        this.graphics.Update(this.script);
-        
-        window.requestAnimationFrame(() => this.Run());
-    }
             
     // Public static method to get the instance of the class
     public static GetInstance() : WebGL 

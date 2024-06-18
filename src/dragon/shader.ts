@@ -32,13 +32,13 @@ export class Shader
             console.log(gl.getShaderInfoLog(vShader))
         };
         
-        const fShader : WebGLProgram | null = gl.createShader(gl.VERTEX_SHADER);
+        const fShader : WebGLProgram | null = gl.createShader(gl.FRAGMENT_SHADER);
         if(fShader == null)
         {
             throw new Error("Failed to create fragment shader!")
         };
 
-        gl.shaderSource(fShader, vSource); 
+        gl.shaderSource(fShader, fSource); 
         gl.compileShader(fShader); 
         if(gl.getShaderInfoLog(fShader)) 
         {
@@ -57,7 +57,7 @@ export class Shader
 
         this.ID = {val: id};
         gl.attachShader(this.ID.val, vShader);
-        gl.attachShader(this.ID.val, vShader);
+        gl.attachShader(this.ID.val, fShader);
         gl.linkProgram(this.ID.val);
 
         if (!gl.getProgramParameter(this.ID.val, gl.LINK_STATUS)) 

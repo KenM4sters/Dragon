@@ -1,61 +1,69 @@
 import * as glm from "gl-matrix";
-import VertexArray from "./vertexArray";
 import { Shader } from "./shader";
 import { WebGL } from "./webgl";
+import { Geometry } from "./geometry";
+import { BasicMaterial, Material } from "./material";
 
 
 
-export interface Transforms 
+export class Transforms 
 {
-    position : glm.vec3;
-    scale : glm.vec3;
-    rotation : glm.quat;
-    model : glm.mat4;
-    view : glm.mat4;
-    projection : glm.mat4; 
+    constructor() {}
+
+    public position : glm.vec3 = glm.vec3.fromValues(0, 0, 0);
+    public scale : glm.vec3 = glm.vec3.fromValues(1, 1, 1);
+    public rotation : glm.quat = glm.quat.fromValues(0, 0, 0, 0);
+    public model : glm.mat4 = glm.mat4.create();
+    public view : glm.mat4 = glm.mat4.create();
+    public projection : glm.mat4 = glm.mat4.create(); 
 }
-
-export interface EntityCreateInfo 
-{
-    vertexArray : VertexArray;
-    shader : Shader;
-    transforms : Transforms;
-};
 
 export class Entity 
 {
-    constructor(createInfo : EntityCreateInfo) 
-    {
-        this.vertexArray = createInfo.vertexArray;
-        this.shader = createInfo.shader;
-        this.transforms = createInfo.transforms;
+    constructor() {}
 
-        this.gl = WebGL.GetInstance().gl;
+    public Set<T extends Shader | Transforms | Geometry>(constructor: new (...args: any[]) => T, ...args: any[]): void 
+    {
+        const comp: T = new constructor(...args);
+    
+        if(comp == undefined || comp == null) 
+        {
+            throw new Error("Invalid call to Entity.Set(). Failed to create instance of T!");
+        }
+
+        this.components.set((comp.constructor as any).name, comp);
+    }
+
+
+    public Get<T>(constructor: new (...args: any[]) => T): T | undefined 
+    {
+        return this.components.get((constructor as any).name) as T | undefined;
     }
 
     public Update() : void 
     {
-        // Transforms.
-        //
-        this.transforms.model = glm.mat4.create();
-        this.transforms.model = glm.mat4.scale(glm.mat4.create(), this.transforms.model, this.transforms.scale);
-        this.transforms.model = glm.mat4.translate(glm.mat4.create(), this.transforms.model, this.transforms.position);
+        const gl = WebGL.GetInstance().gl;
 
-        // Shader.
-        //
-        this.gl.useProgram(this.shader.GetId().val);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.GetId().val, "model"), false, this.transforms.model);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.GetId().val, "view"), false, this.transforms.view);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.GetId().val, "projection"), false, this.transforms.projection);
-        this.gl.useProgram(null);
+
+        const transforms = this.Get<Transforms>(Transforms);
+        const material = this.Get<BasicMaterial>(BasicMaterial);
+
+        if(transforms instanceof Transforms && material instanceof BasicMaterial) 
+        {
+            transforms.model = glm.mat4.create();
+            transforms.model = glm.mat4.scale(glm.mat4.create(), transforms.model, transforms.scale);
+            transforms.model = glm.mat4.translate(glm.mat4.create(), transforms.model, transforms.position);
+
+            const shader = material.shader
+
+            gl.useProgram(shader.GetId().val);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "model"), false, transforms.model);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, transforms.view);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, transforms.projection);
+            gl.useProgram(null);
+        }
+
     }
 
-    public GetVertexArray() : VertexArray { return this.vertexArray; }
-    public GetShader() : Shader { return this.shader; }
-    public GetTransforms() : Transforms { return this.transforms; }
-
-    private vertexArray : VertexArray;
-    private shader : Shader;
-    private transforms : Transforms;
-    private gl : WebGL2RenderingContext;
+    private components : Map<string, object> = new Map<string, object>();
 };
