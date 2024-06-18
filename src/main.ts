@@ -1,5 +1,5 @@
-import { WebGL } from "./webgl/webgl";
 import { Frontend } from "./frontend";
+import { Script } from "./script";
 
 
 class App
@@ -7,18 +7,17 @@ class App
     constructor() 
     {
         this.frontend = new Frontend();
-        this.webgl = new WebGL();
+        this.script = new Script();
     }
 
     public Run() : void 
     {
-        this.webgl.Run();
+        this.script.Update();
     }
 
     private frontend : Frontend;
-    private webgl : WebGL; 
+    private script : Script;
 };
 
-
-var app = new App();
+const app = new App();
 app.Run();

@@ -6,11 +6,10 @@ export class PerspectiveCamera
     constructor(pos : glm.vec3) 
     {
         this.position = pos;
-
-        const webgl = new WebGL();
-        const w = webgl.sizes.GetWidth();
-        const h = webgl.sizes.GetHeight();
+    }
         
+    public Update(w : number, h : number) 
+    {
         this.UpdateProjectionMatrix(w, h);
         this.UpdateViewMatrix();
     }

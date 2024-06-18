@@ -1,3 +1,5 @@
+import { Graphics } from "./graphics";
+import { Script } from "../script";
 import { Sizes } from "./sizes";
 
 /**
@@ -16,22 +18,13 @@ export class Ref<T> {
 };
 
 
-let singleton = false;
-
 /**
  * @brief Singleton class to act as our entry point.
  */
 export class WebGL implements Layer 
 {
-    constructor() 
-    {
-        if(singleton) 
-        {
-            return this;
-        }
-
-        singleton = true;
-        
+    private constructor() 
+    {        
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         
         this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
@@ -50,23 +43,40 @@ export class WebGL implements Layer
         };
 
         this.sizes = new Sizes();
+        this.script = new Script();
     }
     
-    public OnResize(): void 
+    public OnResize() : void 
     {
 
     }
 
     public Run() : void 
     {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
-        this.gl.clearColor(0.11, 0.1, 0.1, 1.0);
+        if(!this.graphics) 
+        {
+            this.graphics = new Graphics();
+        }
 
+        this.graphics.Update(this.script);
+        
         window.requestAnimationFrame(() => this.Run());
     }
+            
+    // Public static method to get the instance of the class
+    public static GetInstance() : WebGL 
+    {
+        if(!WebGL.instance) 
+        {
+            WebGL.instance = new WebGL();
+        }
 
+        return WebGL.instance;
+    }
+                
+                
     public canvas !: HTMLCanvasElement;
     public gl !: WebGL2RenderingContext;
-    public sizes !: Sizes;
+    
+    private static instance : WebGL | null = null;
 };

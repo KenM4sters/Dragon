@@ -1,14 +1,14 @@
 import { IndexBuffer, VertexBuffer } from "./buffer";
 import { Ref, WebGL } from "./webgl";
 
-export default class VertexArray 
+export class VertexArray 
 {
     constructor(vBuffer : VertexBuffer, iBuffer : IndexBuffer | null = null) 
     {
         this.vertexBuffer = vBuffer;
         this.indexBuffer = iBuffer;
 
-        const webgl = new WebGL();
+        const webgl = WebGL.GetInstance();
         const gl = webgl.gl;
 
         this.id = {val: gl.createVertexArray()};

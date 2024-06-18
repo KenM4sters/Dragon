@@ -16,7 +16,7 @@ export class Shader
         if(!vSource || !fSource)
             throw new Error("Failed to get Shader source code from scriptId!");
 
-        const gl = new WebGL().gl;
+        const gl = WebGL.GetInstance().gl;
 
         // Secondly, we need to create glPrograms for each shader.
         const vShader : WebGLProgram | null = gl.createShader(gl.VERTEX_SHADER);

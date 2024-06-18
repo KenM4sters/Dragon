@@ -106,7 +106,7 @@ export class VertexBuffer
         VertexBuffer.cachedSize += this.uniqueSize;
         this.PushLayoutToBuffer();
 
-        var webgl = new WebGL();
+        var webgl = WebGL.GetInstance();
         const gl = webgl.gl;
         
         if(!VertexBuffer.Id.val) 
@@ -157,7 +157,7 @@ export class IndexBuffer
         IndexBuffer.cachedIndices = temp;
         IndexBuffer.cachedSize = IndexBuffer.cachedIndices.length * 2; // 16 bits = 2 bytes.
         
-        var webgl = new WebGL();
+        var webgl = WebGL.GetInstance();
         const gl = webgl.gl;
 
         if(!IndexBuffer.Id.val) 
