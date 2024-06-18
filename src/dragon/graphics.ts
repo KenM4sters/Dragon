@@ -3,6 +3,9 @@ import { Pass } from "./pass";
 import { Renderer } from "./renderer";
 import { PerspectiveCamera } from "./camera";
 import { Registry } from "./registry";
+import { BoxGeometry } from "./geometry";
+import { BasicMaterial } from "./material";
+import { UpdateComponent } from "./entity";
 
 export class Graphics implements Layer
 {
@@ -12,9 +15,28 @@ export class Graphics implements Layer
         this.gl = webgl.gl;
     }
 
-    public Update(registry : Registry, camera : PerspectiveCamera, ) : void 
-    {        
-        this.renderer.Render();
+    public Update(registry : Registry, camera : PerspectiveCamera, elapsedTime : number, timeStep : number) : void 
+    {
+        this.renderer.Begin();
+
+        for(const entity of registry.GetAllEntities())  
+        {
+            const geo = entity.Get<BoxGeometry>(BoxGeometry);
+            const mat = entity.Get<BasicMaterial>(BasicMaterial);
+            const update = entity.Get<UpdateComponent>(UpdateComponent);
+            
+            entity.Update(camera);
+
+            if(update) 
+            {
+                update.func(entity, elapsedTime, timeStep);
+            }
+
+            if(geo && mat) 
+            {                   
+                this.renderer.Render(geo.GetVertexArray(), mat.GetShader());
+            }
+        }      
     }   
 
     public OnResize(): void 

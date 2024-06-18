@@ -30,5 +30,7 @@ export class BoxGeometry extends Geometry
         this.vertexArray = new VertexArray(cubeBuffer);
     }
 
+    public GetVertexArray() : VertexArray { return this.vertexArray; }
+
     private vertexArray : VertexArray;
 };

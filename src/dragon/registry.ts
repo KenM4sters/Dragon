@@ -11,6 +11,8 @@ export class Registry
         this.entities.push(entity);
         return entity;
     }
+
+    public GetAllEntities() : Array<Entity> { return this.entities; }
     
     private entities : Array<Entity> = new Array<Entity>();
 };

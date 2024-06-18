@@ -2,11 +2,9 @@
 precision highp float;
 
 out vec4 FragColor;
-in vec2 vUV;
-
-uniform sampler2D srcTexture;
+in vec3 vNormal;
 
 void main() 
 {
-    FragColor = vec4(texture(srcTexture, vUV).rgb, 1.0);
+    FragColor = vec4(vNormal, 1.0);
 }

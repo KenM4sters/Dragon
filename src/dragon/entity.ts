@@ -3,8 +3,16 @@ import { Shader } from "./shader";
 import { WebGL } from "./webgl";
 import { Geometry } from "./geometry";
 import { BasicMaterial, Material } from "./material";
+import { PerspectiveCamera } from "./camera";
 
-
+export class UpdateComponent 
+{
+    constructor(callback : (ent : Entity, elapsedTime : number, timeStep : number) => void) 
+    {
+        this.func = callback;
+    }
+    public func : ((ent : Entity, elapsedTime : number, timeStep : number) => void);
+};
 
 export class Transforms 
 {
@@ -40,7 +48,7 @@ export class Entity
         return this.components.get((constructor as any).name) as T | undefined;
     }
 
-    public Update() : void 
+    public Update(camera : PerspectiveCamera) : void 
     {
         const gl = WebGL.GetInstance().gl;
 
@@ -51,15 +59,16 @@ export class Entity
         if(transforms instanceof Transforms && material instanceof BasicMaterial) 
         {
             transforms.model = glm.mat4.create();
+            transforms.model = glm.mat4.fromQuat(transforms.model, transforms.rotation);
             transforms.model = glm.mat4.scale(glm.mat4.create(), transforms.model, transforms.scale);
             transforms.model = glm.mat4.translate(glm.mat4.create(), transforms.model, transforms.position);
 
-            const shader = material.shader
+            const shader = material.GetShader();            
 
             gl.useProgram(shader.GetId().val);
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "model"), false, transforms.model);
-            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, transforms.view);
-            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, transforms.projection);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, camera.GetViewMatrix());
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, camera.GetProjectionMatrix());
             gl.useProgram(null);
         }
 

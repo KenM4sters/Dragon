@@ -1,6 +1,7 @@
 import { PerspectiveCamera } from "./camera";
 import { Graphics } from "./graphics";
 import { Registry } from "./registry";
+import { WebGL } from "./webgl";
 
 
 export class Dragon 
@@ -17,11 +18,14 @@ export class Dragon
 
     private AnimationLoop(elapsedTime: number): void 
     {
-        const timeStep = elapsedTime - this.lastFrame;
+        this.elapsedTime = elapsedTime;
+        this.timeStep = elapsedTime - this.lastFrame;
         this.lastFrame = elapsedTime;
 
-        if (this.scriptLoop) {
-            this.scriptLoop(elapsedTime, timeStep);
+
+        if(this.scriptLoop) 
+        {
+            this.scriptLoop(elapsedTime, this.timeStep);
         }
 
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
@@ -33,7 +37,21 @@ export class Dragon
         this.camera = this.camera as PerspectiveCamera;
         this.registry = this.registry as Registry;
 
-        this.graphics.Update(this.registry, this.camera);
+        this.camera.Update(this.width, this.height);
+
+        this.graphics.Update(this.registry, this.camera, this.elapsedTime, this.timeStep);
+    }
+
+    public SetSizes(width: number, height: number) 
+    {
+        this.width = width;
+        this.height = height;
+        
+        const webgl = WebGL.GetInstance();
+
+        webgl.canvas.width = width;
+        webgl.canvas.height = height;
+        webgl.gl.viewport(0, 0, width, height);
     }
 
     public Stop(): void 
@@ -52,4 +70,9 @@ export class Dragon
     private scriptLoop !: ((elapsedTime :number, timeStep : number) => void) | undefined;
     private animationFrameId : number = 0;
     private lastFrame : number = 0;
+    private elapsedTime : number = 0;
+    private timeStep : number = 0;
+
+    private width : number = 0;
+    private height : number = 0;
 }

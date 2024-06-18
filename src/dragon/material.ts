@@ -23,5 +23,7 @@ export class BasicMaterial extends Material
         this.shader = new Shader(mvpVert, rawFrag);
     }
 
-    public shader : Shader;
+    public GetShader() : Shader { return this.shader; }
+
+    private shader : Shader;
 }

@@ -1,5 +1,4 @@
 import * as glm from "gl-matrix";
-import { WebGL } from "./webgl";
 
 export class PerspectiveCamera 
 {
@@ -22,7 +21,7 @@ export class PerspectiveCamera
     }
     
     public UpdateProjectionMatrix(w : number, h : number) : void 
-    {
+    {                
         glm.mat4.perspective(this.projectionMatrix, glm.glMatrix.toRadian(this.fov), w/h, 0.1, 1000);
     }
     

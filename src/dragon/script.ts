@@ -5,7 +5,7 @@ export abstract class IScript
 {
     constructor() 
     {
-        this.Loop = this.Loop.bind(this);
+        this.Loop = this.Loop.bind(this); 
     }
 
     protected abstract Loop(elapsedTime : number, timeStep : number) : void;
