@@ -10,8 +10,8 @@ function Update(cube : DRAGON.Entity, elapsedTime : number, timeStep : number)
     {
         const axis = glm.vec3.fromValues(1, -1, 0);
         const angle = elapsedTime * 45 * 0.0005; 
-        // const quat = glm.quat.setAxisAngle(transforms.rotation, axis, glm.glMatrix.toRadian(angle));
-        // transforms.rotation = glm.quat.normalize(quat, quat);
+        const quat = glm.quat.setAxisAngle(transforms.rotation, axis, glm.glMatrix.toRadian(angle));
+        transforms.rotation = glm.quat.normalize(quat, quat);
     }
 }
 

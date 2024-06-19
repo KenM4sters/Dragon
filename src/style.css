@@ -20,6 +20,8 @@ body
 
 .app 
 {
+    margin: 0;
+    padding: 0;
     position: relative;
     width: 100vw;
     height: 100vh;
@@ -33,8 +35,8 @@ body
 
 .home 
 {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     position: relative;
     display: flex;
     justify-content: center;
@@ -72,18 +74,210 @@ body
 .navbar-item 
 {
     text-decoration: none;
+    cursor: pointer;
     font-weight: 500;
     color: rgb(197, 197, 197);
 }
 
+
 /**
 * Projects
 */
+
+.projects-navbar 
+{
+    width: 40%;
+    height: 8vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    place-items: center;
+    column-gap: 3vw;
+
+    border-radius: 15px;
+    background-color: rgba(221, 221, 221, 0.007);
+}
+
+.project-item 
+{
+    color: rgb(200, 206, 211);
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: calc(0.5vh + 0.6rem);
+    font-weight: 500;
+}
 
 .projects 
 {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: rgb(15, 15, 15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    place-items: center;
+    row-gap: 10vh;
+    background-color: rgb(27, 27, 27);
+}
+ 
+.projects-container 
+{
+    position: relative;
+    width: 70vw;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: row;
+    column-gap: 5vw;
+}
+
+.project-image-container 
+{
+    height: 100%;
+    background-color: rebeccapurple;
+}
+
+.project-image-container img 
+{
+    height: 50vh;
+    width: 40vw;
+}
+
+.project-info-container 
+{
+    position: relative;
+    height: 85%;
+    display: flex;
+    justify-content: start;
+    place-items: left;
+    flex-direction: column;
+    row-gap: 1vh;
+}
+
+.project-meta-data-container 
+{
+    width: 75%;
+    height: 45%;
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    row-gap: 4vh;
+    flex-wrap: wrap;
+}
+
+.project-meta-data 
+{
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: column;
+    row-gap: 1vh;
+}
+
+.project-meta-data p1 
+{
+    color: rgb(192, 192, 192);
+    font-weight: 500;
+    text-decoration: underline;
+    font-size: calc(0.6vh + 0.5rem);
+}
+.project-meta-data p4
+{
+    color: rgb(192, 192, 192);
+    font-size: calc(0.5vh + 0.5rem);
+}
+.project-meta-data a
+{
+    color: rgb(192, 192, 192);
+    font-size: calc(0.5vh + 0.5rem);
+    text-decoration: none;
+}
+
+.project-description 
+{
+    color: white;
+}
+
+
+/**
+* About
+*/
+
+.about 
+{
+    position: relative;
+    color: rgb(197, 197, 197);
+    width: 100vw;
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: column;
+    background-color: rgb(27, 27, 27);
+}
+
+.about-container 
+{
+    width: 30vw;
+    height: 30vh;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: column;
+    row-gap: 1vh;
+}
+
+.links 
+{
+    position: relative;
+    color: rgb(197, 197, 197);
+    width: 100vw;
+    height: 50vh;
+    display: flex;
+    justify-content: start;
+    place-items: center;
+    flex-direction: column;
+    row-gap: 8vh; 
+    padding-top: 15vh;
+    background-color: rgb(35, 35, 35);
+}
+
+.links-container 
+{
+    width: 30vw;
+    height: 5vh;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: row;
+    column-gap: 2vw;
+}
+
+.links-header 
+{
+    font-size: calc(1.0vh + 1.0rem);
+}
+
+.link-wrapper 
+{
+    display: flex;
+    width: 15vw;
+    height: 10vh;
+    justify-content: center;
+    place-items: center;
+    flex-direction: column;
+    row-gap: 4vh;
+}
+
+.about-link 
+{
+    font-size: calc(1.7vh + 1.5rem);
+}
+
+.about-link-caption 
+{
+    text-align: center;
+    font-size: calc(0.4vh + 0.6rem);
+    font-weight: 600;
 }

@@ -41,7 +41,7 @@ export class Renderer implements Layer
 
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
-        this.gl.clearColor(0.11, 0.1, 0.1, 1.0); 
+        this.gl.clearColor(0.1, 0.1, 0.1, 1.0); 
     }
 
     public EndStage(stage : RenderStage) : RawTexture2D 

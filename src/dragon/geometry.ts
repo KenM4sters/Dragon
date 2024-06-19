@@ -7,7 +7,7 @@ export abstract class Geometry
 {
     constructor() 
     {
-
+        
     }
 }
 
