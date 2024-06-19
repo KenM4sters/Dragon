@@ -1,5 +1,5 @@
 import * as glm from "gl-matrix";
-import { Shader } from "./shader";
+import { Shader } from "./graphics/shader";
 import { WebGL } from "./webgl";
 import { Geometry } from "./geometry";
 import { BasicMaterial, Material } from "./material";

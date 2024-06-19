@@ -24,7 +24,7 @@ export class WebGL implements Layer
     {        
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         
-        this.gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext;
+        this.gl = this.canvas.getContext('webgl2', { antialias: true }) as WebGL2RenderingContext;
         if (!this.gl) throw new Error("webgl context is not available!");
 
         var ext1 = this.gl.getExtension('EXT_color_buffer_float');

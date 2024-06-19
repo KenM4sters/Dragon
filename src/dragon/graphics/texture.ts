@@ -1,4 +1,4 @@
-import { Ref, WebGL } from "./webgl";
+import { Ref, WebGL } from "../webgl";
 
 export interface RawTextureCreateInfo 
 {
@@ -65,7 +65,7 @@ export class RawTexture2D extends Texture
     {
         this.textureInfo = textureInfo;
         this.gl.bindTexture(textureInfo.dimension, this.id.val);
-        this.gl.texImage2D(textureInfo.dimension, 0, textureInfo.format, textureInfo.width, textureInfo.height, 0, textureInfo.nChannels, textureInfo.type,textureInfo.data);
+        this.gl.texImage2D(textureInfo.dimension, 0, textureInfo.format, textureInfo.width, textureInfo.height, 0, textureInfo.nChannels, textureInfo.type, textureInfo.data);
         this.gl.bindTexture(textureInfo.dimension, null);
     }
 

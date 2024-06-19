@@ -9,8 +9,9 @@ function Update(cube : DRAGON.Entity, elapsedTime : number, timeStep : number)
     if(transforms) 
     {
         const axis = glm.vec3.fromValues(1, -1, 0);
-        const angle = elapsedTime * 45 * 0.000001;
-        transforms.rotation = glm.quat.setAxisAngle(transforms.rotation, axis, angle);
+        const angle = elapsedTime * 45 * 0.0005; 
+        // const quat = glm.quat.setAxisAngle(transforms.rotation, axis, glm.glMatrix.toRadian(angle));
+        // transforms.rotation = glm.quat.normalize(quat, quat);
     }
 }
 
@@ -23,16 +24,17 @@ export class Script extends DRAGON.IScript
          
         this.dragon.camera = new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0));
         
-        this.dragon.SetSizes(window.innerWidth, window.innerHeight);
-
+        
         const cube = this.dragon.registry.CreateEntity();
         
         cube.Set<DRAGON.BasicMaterial>(DRAGON.BasicMaterial);
         cube.Set<DRAGON.Geometry>(DRAGON.BoxGeometry);
         cube.Set<DRAGON.Transforms>(DRAGON.Transforms);
         cube.Set<DRAGON.UpdateComponent>(DRAGON.UpdateComponent, Update);
-
+        
         this.dragon.graphics = new DRAGON.Graphics();
+        this.dragon.graphics.SetSizes(window.innerWidth, window.innerHeight);
+
         this.dragon.SetAnimationLoop(this.Loop);
     }
 
