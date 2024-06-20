@@ -1,9 +1,9 @@
 import * as glm from "gl-matrix";
-import { Shader } from "./graphics/shader.ts";
-import { WebGL } from "./webgl.ts";
-import { Geometry } from "./geometry.ts";
-import { BasicMaterial, Material } from "./material.ts";
-import { PerspectiveCamera } from "./camera.ts";
+import { Shader } from "./graphics/shader";
+import { WebGL } from "./webgl";
+import { Geometry } from "./geometry";
+import { BasicMaterial, Material } from "./material";
+import { PerspectiveCamera } from "./camera";
 
 export class UpdateComponent 
 {

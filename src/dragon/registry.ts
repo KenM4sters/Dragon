@@ -1,4 +1,4 @@
-import { Entity } from "./entity.ts";
+import { Entity } from "./entity";
 
 
 export class Registry 

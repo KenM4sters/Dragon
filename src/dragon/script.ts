@@ -1,4 +1,4 @@
-import { Dragon } from "./dragon.ts";
+import { Dragon } from "./dragon";
 
 
 export abstract class IScript 

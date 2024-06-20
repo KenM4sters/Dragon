@@ -1,6 +1,6 @@
-import { PerspectiveCamera } from "./camera.ts";
-import { Graphics } from "./graphics/graphics.ts";
-import { Registry } from "./registry.ts";
+import { PerspectiveCamera } from "./camera";
+import { Graphics } from "./graphics/graphics";
+import { Registry } from "./registry";
 
 
 export class Dragon 

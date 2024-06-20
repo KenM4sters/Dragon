@@ -1,4 +1,4 @@
-import * as DRAGON from "./dragon/export.ts";
+import * as DRAGON from "./dragon/export";
 import * as glm from "gl-matrix";
 
 

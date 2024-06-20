@@ -1,4 +1,4 @@
-import { Ref, WebGL } from "../webgl.ts";
+import { Ref, WebGL } from "../webgl";
 
 
 export class Shader 
