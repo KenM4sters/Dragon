@@ -45,7 +45,6 @@ export class Dragon
 
         this.scriptLoop = undefined; 
     }
-
     
     public registry : Registry = new Registry();
     

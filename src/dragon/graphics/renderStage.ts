@@ -24,7 +24,7 @@ export class RenderStage implements Layer
 
     public Begin() : void 
     {
-        const gl = WebGL.GetInstance().gl;
+        const gl = WebGL.GetInstance().gl;        
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer.GetFramebufferId().val);
     }
 
@@ -42,6 +42,11 @@ export class RenderStage implements Layer
     public GetTargetTexture() : RawTexture2D 
     {
         return this.framebuffer.framebufferInfo.targetTexture;
+    }
+
+    public Destroy() : void 
+    {
+        this.framebuffer.Destroy();
     }
 
     private framebuffer : Framebuffer;

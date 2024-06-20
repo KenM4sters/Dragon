@@ -1,8 +1,13 @@
-import * as landingHTML from "./landing.html?raw";
-import * as projectsHTML from "./projects.html?raw";
-import * as aboutHTML from "./about.html?raw";
+import landingHTML from "./landing.html?raw";
+import aboutHTML from "./about.html?raw";
+import projectsHTML from "./projects.html?raw";
 
-import { Scroll } from "./scroll";
+import mammoth2dHTML from "./projects/mammoth2d.html?raw";
+import silverbackHTML from "./projects/silverback.html?raw";
+import dragonHTML from "./projects/dragon.html?raw";
+import reactionHTML from "./projects/reaction.html?raw";
+
+import { Project } from "./projects";
 
 export class Frontend 
 {
@@ -10,27 +15,77 @@ export class Frontend
   {
     let app : HTMLElement = document.querySelector('#app') as HTMLElement;
 
-    const landing = document.createElement('div');
-    const projects = document.createElement('div');
-    const about = document.createElement('div');
-    
-    this.elements.set("Landing", landing);
-    this.elements.set("Projects", projects);
-    this.elements.set("About", about);
+    let landing = document.createElement('div') as HTMLElement;
+    let projects = document.createElement('div') as HTMLElement;
+    let about = document.createElement('div') as HTMLElement;
 
-    landing.innerHTML = landingHTML.default;
-    projects.innerHTML = projectsHTML.default;
-    about.innerHTML = aboutHTML.default;
+    landing.innerHTML = landingHTML;
+    about.innerHTML = aboutHTML;
+    projects.innerHTML = projectsHTML;
     
     app.appendChild(landing);
     app.appendChild(projects);
     app.appendChild(about);
 
-    // this.scroll = new Scroll();
 
+    const mammoth2d = new Project(mammoth2dHTML);
+    const silverback = new Project(silverbackHTML);
+    const reaction = new Project(reactionHTML);
+    const dragon = new Project(dragonHTML);
+
+    this.projects.set("mammoth2d", mammoth2d );
+    this.projects.set("silverback", silverback);
+    this.projects.set("reaction", reaction);
+    this.projects.set("dragon", dragon);
+
+    
+    let projectWrapper = document.querySelector(".projects-wrapper") as HTMLElement;
+
+    this.ViewProject(projectWrapper, document.querySelector(".mammoth2d") as HTMLElement, mammoth2d);
+
+
+    window.addEventListener('DOMContentLoaded', () => 
+    {
+      window.addEventListener('click', (event : MouseEvent) => 
+        {
+          const element = event.target as HTMLElement;
+
+          if(element.classList.contains("mammoth2d")) 
+          {
+            this.ViewProject(projectWrapper, element, mammoth2d);
+          }
+          else if(element.classList.contains("silverback")) 
+          {
+            this.ViewProject(projectWrapper, element, silverback);
+          }
+          else if(element.classList.contains("reaction")) 
+          {
+            this.ViewProject(projectWrapper, element, reaction);
+          }
+          else if(element.classList.contains("dragon")) 
+          {
+            this.ViewProject(projectWrapper, element, dragon);
+          }
+        })
+    })
   }
 
 
-  private elements : Map<string, HTMLElement> = new Map<string, HTMLElement>();
-  private scroll !: Scroll;
+  ViewProject(projectWrapper : HTMLElement, navbarElement : HTMLElement,  project : Project) : void 
+  {
+    navbarElement.classList.add("selected-project");
+    if (navbarElement && navbarElement.parentElement) 
+    {
+      const siblings = Array.from(navbarElement.parentElement.children).filter(child => child !== navbarElement);
+      for(let sibling of siblings) 
+        {
+          sibling.classList.remove("selected-project");
+        }
+    }
+
+    projectWrapper.innerHTML = project.text;
+  }
+  
+  private projects : Map<string, Project> = new Map<string, Project>();
+  
 };

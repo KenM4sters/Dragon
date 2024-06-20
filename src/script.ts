@@ -24,7 +24,6 @@ export class Script extends DRAGON.IScript
          
         this.dragon.camera = new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0));
         
-        
         const cube = this.dragon.registry.CreateEntity();
         
         cube.Set<DRAGON.BasicMaterial>(DRAGON.BasicMaterial);
@@ -40,7 +39,6 @@ export class Script extends DRAGON.IScript
 
     public override Loop(elapsedTime : number, timeStep : number) : void 
     {   
-        
         this.dragon.Update();
     }
 

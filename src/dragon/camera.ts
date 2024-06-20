@@ -7,12 +7,6 @@ export class PerspectiveCamera
         this.position = pos;
     }
         
-    public Update(w : number, h : number) 
-    {
-        this.UpdateProjectionMatrix(w, h);
-        this.UpdateViewMatrix();
-    }
-
     public UpdateViewMatrix() : void 
     {
         this.right = glm.vec3.normalize(glm.vec3.create(), glm.vec3.cross( glm.vec3.create(), this.front, this.up)); 
@@ -20,20 +14,26 @@ export class PerspectiveCamera
         this.viewMatrix = glm.mat4.lookAt(this.viewMatrix, this.position, glm.vec3.add(glm.vec3.create(), this.position, this.front), this.up);
     }
     
-    public UpdateProjectionMatrix(w : number, h : number) : void 
-    {                
-        glm.mat4.perspective(this.projectionMatrix, glm.glMatrix.toRadian(this.fov), w/h, 0.1, 1000);
+    public UpdateProjectionMatrix(width: number, height: number) : void 
+    {                  
+        this.width = width;            
+        this.height = height;            
+        glm.mat4.perspective(this.projectionMatrix, glm.glMatrix.toRadian(this.fov), this.width/this.height, 0.1, 1000);
     }
     
-    public ResetFOV(fov : number, w: number, h : number) : void 
+    public ResetFOV(fov : number, width: number, height: number) : void 
     { 
-        this.fov = fov; this.UpdateProjectionMatrix(w, h); 
+        this.fov = fov; 
+        this.UpdateProjectionMatrix(width, height); 
     }
 
     // Getters.
     public GetPosition() : glm.vec3 { return this.position; }
     public GetProjectionMatrix() : glm.mat4 { return this.projectionMatrix; }
     public GetViewMatrix() : glm.mat4 { return this.viewMatrix; }
+    
+    public width: number = 0;
+    public height: number = 0;
 
     private position : glm.vec3;
     private front : glm.vec3 = [0.0, 0.0, -1.0];

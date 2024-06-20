@@ -37,6 +37,11 @@ abstract class Texture
 
     public abstract CreateSampler(samplerInfo : SamplerCreateInfo) : void;
 
+    public Destroy() : void
+    {
+        this.gl.deleteTexture(this.id.val);
+    }
+
     public GetId() : Ref<WebGLTexture> { return this.id; }
 
     protected id : Ref<WebGLTexture>;

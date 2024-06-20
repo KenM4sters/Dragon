@@ -49,6 +49,7 @@ export class Framebuffer
     {
         this.framebufferInfo = framebufferInfo;
 
+
         framebufferInfo.targetTexture.CreateTextureImage2D(
         {
             dimension: framebufferInfo.dimension,
@@ -111,6 +112,16 @@ export class Framebuffer
         
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
+    }
+
+    public Destroy() : void 
+    {
+        this.gl.deleteFramebuffer(this.framebufferId.val);
+        this.gl.deleteRenderbuffer(this.renderbufferId.val);
+        if(this.framebufferInfo) 
+        {
+            this.framebufferInfo.targetTexture.Destroy();
+        }
     }
 
     public GetFramebufferId() : Ref<WebGLFramebuffer> { return this.framebufferId};

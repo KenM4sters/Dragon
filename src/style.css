@@ -100,11 +100,16 @@ body
 
 .project-item 
 {
-    color: rgb(200, 206, 211);
+    color: rgb(151, 156, 160);
     border-radius: 15px;
     cursor: pointer;
     font-size: calc(0.5vh + 0.6rem);
     font-weight: 500;
+}
+
+.selected-project 
+{
+    color: aliceblue;
 }
 
 .projects 
@@ -196,7 +201,13 @@ body
 
 .project-description 
 {
-    color: white;
+    display: flex;
+    justify-content: center;
+    place-items: left;
+    flex-direction: column;
+    row-gap: 1vh;
+    color: rgb(192, 197, 201);
+    font-size: calc(0.5vw + 0.4rem);
 }
 
 
@@ -262,7 +273,7 @@ body
 .link-wrapper 
 {
     display: flex;
-    width: 15vw;
+    width: 9vw;
     height: 10vh;
     justify-content: center;
     place-items: center;
@@ -272,7 +283,37 @@ body
 
 .about-link 
 {
-    font-size: calc(1.7vh + 1.5rem);
+    font-size: calc(0.7vh + 0.7vw + 1.5rem);
+    transition: all;
+}
+
+.github 
+{
+    color: rgb(21, 131, 182);
+}
+.github:hover 
+{
+    color: rgb(32, 219, 213);
+}
+.email 
+{
+    color: rgb(21, 131, 182);
+
+}
+.email:hover 
+{
+    color: rgb(32, 219, 213);
+
+}
+.discord 
+{
+    color: rgb(21, 131, 182);
+
+}
+.discord:hover 
+{
+    color: rgb(32, 219, 213);
+
 }
 
 .about-link-caption 
