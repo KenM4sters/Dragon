@@ -1,4 +1,4 @@
-import { Primitives } from "../primitives";
+import { Primitives } from "../primitives.ts";
 
 
 export class Pass 

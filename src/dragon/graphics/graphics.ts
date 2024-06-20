@@ -1,14 +1,14 @@
-import { Layer, WebGL } from "../webgl";
-import { Renderer } from "./renderer";
-import { PerspectiveCamera } from "../camera";
-import { Registry } from "../registry";
-import { BoxGeometry } from "../geometry";
-import { BasicMaterial } from "../material";
-import { UpdateComponent } from "../entity";
-import { RenderStage } from "./renderStage";
-import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer";
-import { RawTexture2D } from "./texture";
-import { Pass } from "./pass";
+import { Layer, WebGL } from "../webgl.ts";
+import { Renderer } from "./renderer.ts";
+import { PerspectiveCamera } from "../camera.ts";
+import { Registry } from "../registry.ts";
+import { BoxGeometry } from "../geometry.ts";
+import { BasicMaterial } from "../material.ts";
+import { UpdateComponent } from "../entity.ts";
+import { RenderStage } from "./renderStage.ts";
+import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer.ts";
+import { RawTexture2D } from "./texture.ts";
+import { Pass } from "./pass.ts";
 
 import passVert from "../resources/Raw.vert?raw";
 import hdrFrag from "../resources/HDR.frag?raw";

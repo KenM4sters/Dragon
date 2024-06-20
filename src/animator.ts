@@ -1,4 +1,4 @@
-import { Ref } from "./dragon/webgl";
+import { Ref } from "./dragon/webgl.ts";
 import * as glm from "gl-matrix";
 
 export abstract class Animator 

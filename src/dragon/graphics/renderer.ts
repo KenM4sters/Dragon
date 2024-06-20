@@ -1,8 +1,8 @@
-import { Shader } from "./shader";
-import { VertexArray } from "./vertexArray";
-import { Layer, WebGL } from "../webgl";
-import { RenderStage } from "./renderStage";
-import { RawTexture2D } from "./texture";
+import { Shader } from "./shader.ts";
+import { VertexArray } from "./vertexArray.ts";
+import { Layer, WebGL } from "../webgl.ts";
+import { RenderStage } from "./renderStage.ts";
+import { RawTexture2D } from "./texture.ts";
 
 
 export class Renderer implements Layer 

@@ -1,6 +1,6 @@
-import { Layer, WebGL } from "../webgl";
-import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer";
-import { RawTexture2D } from "./texture";
+import { Layer, WebGL } from "../webgl.ts";
+import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer.ts";
+import { RawTexture2D } from "./texture.ts";
 
 
 export class RenderStage implements Layer

@@ -1,5 +1,5 @@
-import { Frontend } from "./frontend";
-import { Script } from "./script";
+import { Frontend } from "./frontend.ts";
+import { Script } from "./script.ts";
 
 
 class App

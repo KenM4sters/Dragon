@@ -1,6 +1,6 @@
-import { BufferAttribLayout, BufferAttribute, VertexBuffer } from "./graphics/buffer";
-import { Primitives } from "./primitives";
-import { VertexArray } from "./graphics/vertexArray";
+import { BufferAttribLayout, BufferAttribute, VertexBuffer } from "./graphics/buffer.ts";
+import { Primitives } from "./primitives.ts";
+import { VertexArray } from "./graphics/vertexArray.ts";
 
 
 export abstract class Geometry 

@@ -1,5 +1,5 @@
-import { IndexBuffer, VertexBuffer } from "./buffer";
-import { Ref, WebGL } from "../webgl";
+import { IndexBuffer, VertexBuffer } from "./buffer.ts";
+import { Ref, WebGL } from "../webgl.ts";
 
 export class VertexArray 
 {

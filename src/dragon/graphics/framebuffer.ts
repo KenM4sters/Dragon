@@ -1,5 +1,5 @@
-import { RawTexture2D } from "./texture";
-import { Ref, WebGL } from "../webgl";
+import { RawTexture2D } from "./texture.ts";
+import { Ref, WebGL } from "../webgl.ts";
 
 
 export interface FramebufferCreateInfo 

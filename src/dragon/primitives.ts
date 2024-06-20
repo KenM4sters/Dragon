@@ -1,4 +1,4 @@
-import { BufferAttribLayout, BufferAttribute, Shader, VertexArray, VertexBuffer } from "./export";
+import { BufferAttribLayout, BufferAttribute, Shader, VertexArray, VertexBuffer } from "./export.ts";
 
 
 export namespace Primitives 

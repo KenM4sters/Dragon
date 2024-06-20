@@ -1,4 +1,4 @@
-import { Shader } from "./graphics/shader";
+import { Shader } from "./graphics/shader.ts";
 
 // Shaders
 //
