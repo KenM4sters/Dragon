@@ -1,6 +1,7 @@
 import landingHTML from "./landing.html?raw";
-import aboutHTML from "./about.html?raw";
+import linksHTML from "./links.html?raw";
 import projectsHTML from "./projects.html?raw";
+import aboutHTML from "./about.html?raw";
 
 import mammoth2dHTML from "./projects/mammoth2d.html?raw";
 import silverbackHTML from "./projects/silverback.html?raw";
@@ -18,14 +19,17 @@ export class Frontend
     let landing = document.createElement('div') as HTMLElement;
     let projects = document.createElement('div') as HTMLElement;
     let about = document.createElement('div') as HTMLElement;
+    let links = document.createElement('div') as HTMLElement;
 
     landing.innerHTML = landingHTML;
-    about.innerHTML = aboutHTML;
     projects.innerHTML = projectsHTML;
+    about.innerHTML = aboutHTML;
+    links.innerHTML = linksHTML;
     
     app.appendChild(landing);
     app.appendChild(projects);
-    app.appendChild(about);
+    // app.appendChild(about);
+    app.appendChild(links);
 
 
     const mammoth2d = new Project(mammoth2dHTML);

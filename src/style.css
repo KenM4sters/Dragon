@@ -71,12 +71,19 @@ body
     list-style: none; 
 }
 
-.navbar-item 
+.navbar-item a
 {
     text-decoration: none;
     cursor: pointer;
     font-weight: 500;
-    color: rgb(197, 197, 197);
+    color: rgb(168, 172, 174);
+    transition: all;
+}
+
+.navbar-item a:hover 
+{
+    color: rgb(190, 221, 231);
+    transition-duration: 0.5s;
 }
 
 
@@ -109,7 +116,7 @@ body
 
 .selected-project 
 {
-    color: aliceblue;
+    color: rgb(197, 224, 234);
 }
 
 .projects 
@@ -225,7 +232,7 @@ body
     justify-content: center;
     place-items: center;
     flex-direction: column;
-    background-color: rgb(27, 27, 27);
+    background-color: rgb(35, 35, 35);
 }
 
 .about-container 
@@ -238,6 +245,10 @@ body
     flex-direction: column;
     row-gap: 1vh;
 }
+
+/**
+* links
+*/
 
 .links 
 {
@@ -283,7 +294,7 @@ body
 
 .about-link 
 {
-    font-size: calc(0.7vh + 0.7vw + 1.5rem);
+    font-size: calc(0.4vh + 0.4vw + 1.0rem);
     transition: all;
 }
 
@@ -291,29 +302,30 @@ body
 {
     color: rgb(21, 131, 182);
 }
+
 .github:hover 
 {
     color: rgb(32, 219, 213);
 }
+
 .email 
 {
     color: rgb(21, 131, 182);
-
 }
+
 .email:hover 
 {
     color: rgb(32, 219, 213);
-
 }
+
 .discord 
 {
     color: rgb(21, 131, 182);
-
 }
+
 .discord:hover 
 {
     color: rgb(32, 219, 213);
-
 }
 
 .about-link-caption 
