@@ -260,20 +260,20 @@ body
     justify-content: start;
     place-items: center;
     flex-direction: column;
-    row-gap: 8vh; 
+    row-gap: 6vh; 
     padding-top: 15vh;
     background-color: rgb(35, 35, 35);
 }
 
 .links-container 
 {
-    width: 30vw;
+    width: 25vw;
     height: 5vh;
     display: flex;
     justify-content: center;
     place-items: center;
     flex-direction: row;
-    column-gap: 2vw;
+    column-gap: 1.0rem;
 }
 
 .links-header 
@@ -289,12 +289,12 @@ body
     justify-content: center;
     place-items: center;
     flex-direction: column;
-    row-gap: 4vh;
+    row-gap: 2vw;
 }
 
 .about-link 
 {
-    font-size: calc(0.4vh + 0.4vw + 1.0rem);
+    font-size: calc(0.4vh + 0.5vw + 1.0rem);
     transition: all;
 }
 
@@ -331,6 +331,6 @@ body
 .about-link-caption 
 {
     text-align: center;
-    font-size: calc(0.4vh + 0.6rem);
+    font-size: calc(0.4vh + 0.4vw + 0.2rem);
     font-weight: 600;
 }

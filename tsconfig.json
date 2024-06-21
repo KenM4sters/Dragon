@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./docs",
+    "outDir": "./dist",
     "rootDir": "./src",
     "target": "es2020",
     "useDefineForClassFields": true,
