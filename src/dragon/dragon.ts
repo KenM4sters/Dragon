@@ -1,6 +1,6 @@
 import { PerspectiveCamera } from "./camera";
 import { Graphics } from "./graphics/graphics";
-import { Registry } from "./registry";
+import { Scene } from "./scene";
 
 
 export class Dragon 
@@ -32,9 +32,9 @@ export class Dragon
 
     public Update() : void 
     {
-        if(this.camera != undefined && this.graphics != undefined && this.registry != undefined) 
+        if(this.camera != undefined && this.graphics != undefined && this.scene != undefined) 
         {
-            this.graphics.Update(this.registry, this.camera, this.elapsedTime, this.timeStep);
+            this.graphics.Update(this.scene, this.camera, this.elapsedTime, this.timeStep);
         }
     }
 
@@ -45,8 +45,7 @@ export class Dragon
         this.scriptLoop = undefined; 
     }
     
-    public registry : Registry = new Registry();
-    
+    public scene : Scene = new Scene();
     public camera : PerspectiveCamera | undefined = undefined;
     public graphics : Graphics | undefined = undefined;
 

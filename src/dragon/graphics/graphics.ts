@@ -1,18 +1,19 @@
+import * as glm from "gl-matrix";
+
 import { Layer, WebGL } from "../webgl";
 import { Renderer } from "./renderer";
 import { PerspectiveCamera } from "../camera";
-import { Registry } from "../registry";
 import { BoxGeometry } from "../geometry";
-import { BasicMaterial } from "../material";
-import { UpdateComponent } from "../entity";
-import { RenderStage } from "./renderStage";
+import { BasicMaterial, PhysicalMaterial } from "../material";
 import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer";
 import { RawTexture2D } from "./texture";
-import { Pass } from "./pass";
+import { Pass } from "./specialfx/pass";
+import { Mesh } from "../mesh";
+import { Scene } from "../scene";
+import { Light, PointLight } from "../light";
 
 import passVert from "../resources/Raw.vert?raw";
 import hdrFrag from "../resources/HDR.frag?raw";
-
 
 export class Graphics implements Layer
 {
@@ -24,7 +25,7 @@ export class Graphics implements Layer
         window.addEventListener("resize", () => this.OnResize());
     }
 
-    public Update(registry : Registry, camera : PerspectiveCamera, elapsedTime : number, timeStep : number) : void 
+    public Update(scene : Scene, camera : PerspectiveCamera, elapsedTime : number, timeStep : number) : void 
     {
         this.renderer.BeginStage(this.stages.get("SceneStage") as RenderStage);
 
@@ -34,35 +35,22 @@ export class Graphics implements Layer
             camera.UpdateViewMatrix();
         }
 
-        for(const entity of registry.GetAllEntities())  
-        {
-            const geo = entity.Get<BoxGeometry>(BoxGeometry);
-            const mat = entity.Get<BasicMaterial>(BasicMaterial);
-            const update = entity.Get<UpdateComponent>(UpdateComponent);
-            
-            entity.Update(camera);
+        const children = scene.GetAllChildren();
 
-            if(update) 
+        for(const mesh of children.meshes)  
+        {   
+            mesh.UpdateUniforms(camera, children.lights);
+
+            if(mesh.userUpdateCallback) 
             {
-                update.func(entity, elapsedTime, timeStep);
+                mesh.userUpdateCallback(mesh, elapsedTime, timeStep);
             }
 
-            if(geo && mat) 
-            {                   
-                this.renderer.RenderCube(geo.GetVertexArray(), mat.GetShader());
+            if(mesh.geometry instanceof BoxGeometry && mesh.material instanceof PhysicalMaterial) 
+            {                
+                this.renderer.RenderCube(mesh.geometry.GetVertexArray(), mesh.material.GetShader());
             }
-        }      
-
-        const sceneTex = this.renderer.EndStage(this.stages.get("SceneStage") as RenderStage);
-
-        this.gl.bindTexture(sceneTex.GetTextureInfo().dimension, sceneTex.GetId().val);
-        this.gl.useProgram(this.hdrPass.quad.GetShader().GetId().val);
-        
-        this.gl.uniform1i(this.gl.getUniformLocation(this.hdrPass.quad.GetShader().GetId().val, "tex"), 0);
-        this.renderer.RenderQuad(this.hdrPass.quad.GetVertexArray(), this.hdrPass.quad.GetShader());
-
-        this.gl.bindTexture(sceneTex.GetTextureInfo().dimension, null);
-        this.gl.useProgram(null);
+        } 
     }   
 
     public SetSizes(width: number, height: number) 
@@ -72,7 +60,7 @@ export class Graphics implements Layer
             this.Resize(width, height);            
         }
     }
-
+      
 
     private Resize(width: number, height: number) : void 
     {
@@ -110,20 +98,34 @@ export class Graphics implements Layer
             attachmentType: this.gl.DEPTH_STENCIL_ATTACHMENT 
         };
 
+        // Scene stage.
+        //
         let sceneStage = this.stages.get("SceneStage");
+        
         if(sceneStage) 
         {            
             sceneStage.Destroy();          
         }
+
         sceneStage = new RenderStage(new Framebuffer());
         sceneStage.CreateStage(framebufferInfo, renderBufferInfo);
+
         this.stages.set("SceneStage", sceneStage);
-        
+
+        // Bloom Stage.
+        //
+
+
+
+        // Final HDR stage.
+        //
         let hdrStage = this.stages.get("HDRStage");
-        if(hdrStage) 
+        
+        if(hdrStage)
         {
-            hdrStage.Destroy();
+            hdrStage.Destroy();    
         }
+
         hdrStage = new RenderStage(new Framebuffer());
         this.stages.set("HDRStage", hdrStage);
     }
@@ -146,8 +148,6 @@ export class Graphics implements Layer
 
     private renderer : Renderer = new Renderer();
     private stages : Map<string, RenderStage> = new Map<string, RenderStage>();
-
-    private hdrPass : Pass = new Pass(passVert, hdrFrag);
 
     private gl : WebGL2RenderingContext;
 

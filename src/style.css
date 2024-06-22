@@ -45,8 +45,18 @@ body
 
 .landing 
 {
+    position: relative;
     width: 100vw;
     height: 100vh;
+}
+
+.landing-title 
+{
+    position: absolute;
+    align-items: center;
+    right: 43%;
+    color: rgb(180, 188, 192);
+
 }
 
 .navbar 
@@ -91,6 +101,25 @@ body
 * Projects
 */
 
+.projects 
+{
+    position: relative;
+    width: 100vw;
+    height: 120vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    place-items: center;
+    row-gap: 10vh;
+    background-color: rgb(27, 27, 27);
+}
+
+.projects-title 
+{
+    font-size: calc(1.0vh + 1.0rem);
+    color: rgb(197, 197, 197);
+}
+
 .projects-navbar 
 {
     width: 40%;
@@ -100,7 +129,6 @@ body
     justify-content: center;
     place-items: center;
     column-gap: 3vw;
-
     border-radius: 15px;
     background-color: rgba(221, 221, 221, 0.007);
 }
@@ -118,48 +146,35 @@ body
 {
     color: rgb(197, 224, 234);
 }
-
-.projects 
-{
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    place-items: center;
-    row-gap: 10vh;
-    background-color: rgb(27, 27, 27);
-}
  
 .projects-container 
 {
     position: relative;
-    width: 70vw;
-    height: 50vh;
+    width: 80vw;
+    height: 60vh;
     display: flex;
     justify-content: center;
     place-items: center;
     flex-direction: row;
     column-gap: 5vw;
+    margin-bottom: 10%;
 }
 
 .project-image-container 
 {
-    height: 100%;
-    background-color: rebeccapurple;
+    height: 60vh;
 }
 
 .project-image-container img 
 {
-    height: 50vh;
+    height: 60vh;
     width: 40vw;
 }
 
 .project-info-container 
 {
     position: relative;
-    height: 85%;
+    height: 100%;
     display: flex;
     justify-content: start;
     place-items: left;
@@ -170,7 +185,7 @@ body
 .project-meta-data-container 
 {
     width: 75%;
-    height: 45%;
+    height: 30%;
     display: flex;
     justify-content: start;
     flex-direction: column;
@@ -214,7 +229,7 @@ body
     flex-direction: column;
     row-gap: 1vh;
     color: rgb(192, 197, 201);
-    font-size: calc(0.5vw + 0.4rem);
+    font-size: calc(0.6vw + 0.4rem);
 }
 
 
@@ -255,13 +270,13 @@ body
     position: relative;
     color: rgb(197, 197, 197);
     width: 100vw;
-    height: 50vh;
+    height: 40vh;
     display: flex;
     justify-content: start;
     place-items: center;
     flex-direction: column;
     row-gap: 6vh; 
-    padding-top: 15vh;
+    padding-top: 10vh;
     background-color: rgb(35, 35, 35);
 }
 

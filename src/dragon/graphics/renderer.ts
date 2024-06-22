@@ -1,7 +1,6 @@
 import { Shader } from "./shader";
 import { VertexArray } from "./vertexArray";
 import { Layer, WebGL } from "../webgl";
-import { RenderStage } from "./renderStage";
 import { RawTexture2D } from "./texture";
 
 
@@ -44,7 +43,7 @@ export class Renderer implements Layer
         this.gl.clearColor(0.1, 0.1, 0.1, 1.0); 
     }
 
-    public EndStage(stage : RenderStage) : RawTexture2D 
+    public EndStage(stage : RenderStage) : RawTexture2D | null
     {
         stage.End();
         return stage.GetTargetTexture();
@@ -55,5 +54,5 @@ export class Renderer implements Layer
         
     }
 
-    private gl : WebGL2RenderingContext;
+    public gl : WebGL2RenderingContext;
 };

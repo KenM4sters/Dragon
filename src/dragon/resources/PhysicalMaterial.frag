@@ -31,7 +31,7 @@ struct Material
 
 out vec4 FragColor;
 
-in vec3 model_pos;
+in vec3 vModelPos;
 in vec3 vNormal;
 in vec2 vUV;
 
@@ -108,7 +108,7 @@ void main() {
     }
 
     vec3 N = normalize(vNormal);
-    vec3 V = normalize(camera.Position - model_pos);
+    vec3 V = normalize(camera.Position - vModelPos);
 
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, albedoMat, metallicMat);
@@ -116,16 +116,16 @@ void main() {
     // reflectance equation
     vec3 Lo = vec3(0.0);
     // calculate per-light radiance
-    vec3 L = normalize(light1.Position - model_pos);
+    vec3 L = normalize(light1.Position - vModelPos);
     vec3 H = normalize(V + L);
-    float D = length(light1.Position - model_pos);
+    float D = length(light1.Position - vModelPos);
     float attenuation = 1.0 / (D * D);
     vec3 radiance = light1.Color * attenuation * light1.Intensity;        
     
     // cook-torrance brdf
     float NDF = DistributionGGX(N, H, roughnessMat);        
     float G   = GeometrySmith(N, V, L, roughnessMat);      
-    vec3 F    = FresnelSchlick(max(dot(H, V), 0.0), F0);       
+    vec3 F    = FresnelSchlick(max(dot(H, V), 0.0), F0);    
     
     vec3 kS = F;
     vec3 kD = vec3(1.0) - kS;
@@ -141,6 +141,6 @@ void main() {
   
     vec3 ambient = vec3(0.03) * albedoMat * aoMat;
     vec3 color = ambient + Lo + emissionMat; 
-   
+    
     FragColor = vec4(color, 1.0);
 }

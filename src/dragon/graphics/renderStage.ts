@@ -1,53 +1,29 @@
-import { Layer, WebGL } from "../webgl";
-import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer";
-import { RawTexture2D } from "./texture";
+import * as glm from "gl-matrix";
+import { Framebuffer } from "./framebuffer";
+import { Renderer } from "./renderer";
+import { Primitives } from "../primitives";
 
-
-export class RenderStage implements Layer
+export class RenderStage 
 {
-    constructor(framebuffer : Framebuffer) 
+    constructor(renderer : Renderer, readBuffer : Framebuffer) 
     {
-        this.framebuffer = framebuffer;
+        this.readBuffer = readBuffer;
+        this.renderer = renderer;
     }
 
-    public CreateStage(framebufferInfo : FramebufferCreateInfo | null, renderbufferinfo : RenderbufferCreateInfo | null = null) : void 
-    {   
-        if(framebufferInfo) 
-        {
-            this.framebuffer.CreateFrambuffer(framebufferInfo);
-        }
-        if(renderbufferinfo) 
-        {
-            this.framebuffer.CreateRenderbuffer(renderbufferinfo);
-        }
-    }
-
-    public Begin() : void 
+    public SetWriteBuffer(writeBuffer : Framebuffer) : void 
     {
-        const gl = WebGL.GetInstance().gl;        
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer.GetFramebufferId().val);
+        this.writeBuffer = writeBuffer;
     }
 
-    public End() : void 
-    {
-        const gl = WebGL.GetInstance().gl;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    }
+    
 
-    public OnResize(): void 
-    {
+    public GetReadBuffer() : Framebuffer { return this.readBuffer; }
+    public GetWriteBuffer() : Framebuffer | null { return this.writeBuffer; }
 
-    }
+    private readBuffer : Framebuffer;
+    private writeBuffer : Framebuffer | null = null;
 
-    public GetTargetTexture() : RawTexture2D 
-    {
-        return this.framebuffer.framebufferInfo.targetTexture;
-    }
-
-    public Destroy() : void 
-    {
-        this.framebuffer.Destroy();
-    }
-
-    private framebuffer : Framebuffer;
-};
+    public clearColor : glm.vec4;
+    public depthTest : number;
+}
