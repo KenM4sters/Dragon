@@ -17,7 +17,8 @@ export interface FramebufferCreateInfo
     sWrap : number;
     tWrap : number;
     attachmentUnit : number;
-};
+    renderBufferCreateInfo : RenderbufferCreateInfo | null;
+}; 
 
 export interface RenderbufferCreateInfo 
 {
@@ -29,10 +30,13 @@ export interface RenderbufferCreateInfo
 
 export class Framebuffer 
 {
-    constructor() 
+    constructor(createInfo : FramebufferCreateInfo) 
     {
         this.gl = WebGL.GetInstance().gl;
 
+
+        // Create native framebuffer id
+        //
         const framebufferId = this.gl.createFramebuffer();
 
         if(!framebufferId) 
@@ -41,77 +45,84 @@ export class Framebuffer
         }
 
         this.framebufferId = {val: framebufferId};
-
         this.renderbufferId = {val: null};
-    }   
-
-    public CreateFrambuffer(framebufferInfo : FramebufferCreateInfo): void 
-    {
-        this.framebufferInfo = framebufferInfo;
+        this.framebufferInfo = createInfo;
 
 
-        framebufferInfo.targetTexture.CreateTextureImage2D(
+        // Create Texture object.
+        //
+        createInfo.targetTexture.CreateTextureImage2D(
         {
-            dimension: framebufferInfo.dimension,
-            format: framebufferInfo.format,  
-            width: framebufferInfo.width,
-            height: framebufferInfo.height,
-            nChannels: framebufferInfo.nChannels,
-            type: framebufferInfo.type,
-            data: framebufferInfo.data
+            dimension: createInfo.dimension,
+            format: createInfo.format,  
+            width: createInfo.width,
+            height: createInfo.height,
+            nChannels: createInfo.nChannels,
+            type: createInfo.type,
+            data: createInfo.data
         });
 
-        framebufferInfo.targetTexture.CreateSampler(
+
+        // Create Sampler.
+        //  
+        createInfo.targetTexture.CreateSampler(
         {
-            dimension: framebufferInfo.dimension,
-            minFilter: framebufferInfo.minFilter,
-            magFilter: framebufferInfo.magFilter,
-            sWrap: framebufferInfo.sWrap,
-            tWrap: framebufferInfo.tWrap
+            dimension: createInfo.dimension,
+            minFilter: createInfo.minFilter,
+            magFilter: createInfo.magFilter,
+            sWrap: createInfo.sWrap,
+            tWrap: createInfo.tWrap
         });
 
-        const attachmentUnit = this.gl.COLOR_ATTACHMENT0 + framebufferInfo.attachmentUnit;
-        
-        this.gl.bindTexture(framebufferInfo.dimension, framebufferInfo.targetTexture.GetId().val); 
+
+        // Create native framebuffer
+        //
+        const attachmentUnit = this.gl.COLOR_ATTACHMENT0 + createInfo.attachmentUnit;
+        this.gl.bindTexture(createInfo.dimension, createInfo.targetTexture.GetId().val); 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
         
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentUnit, 
-            framebufferInfo.targetTexture.GetTextureInfo().dimension, 
-            framebufferInfo.targetTexture.GetId().val, 0); 
+            createInfo.targetTexture.GetTextureInfo().dimension, 
+            createInfo.targetTexture.GetId().val, 0); 
         
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        this.gl.bindTexture(framebufferInfo.dimension, null);
+        this.gl.bindTexture(createInfo.dimension, null);
         
+
         // Check for any errors.
         //
         const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
+
         if (status != this.gl.FRAMEBUFFER_COMPLETE) 
         {
             console.error('Framebuffer is not complete: ' + status.toString(16));
         }   
 
-    }
 
-    public CreateRenderbuffer(renderbufferInfo : RenderbufferCreateInfo) : void 
-    {
-        this.renderBufferInfo = renderbufferInfo;
-        const renderbufferId = this.gl.createRenderbuffer();
-
-        if(!renderbufferId) 
-        {
-            throw new Error("Failed to create framebuffer!");
+        // Create render buffer if the createInfo contains a RenderBufferCreateInfo.
+        //
+        if(createInfo.renderBufferCreateInfo) 
+        {            
+            this.renderBufferInfo = createInfo.renderBufferCreateInfo;
+    
+            const renderbufferId = this.gl.createRenderbuffer();
+    
+            if(!renderbufferId) 
+            {
+                throw new Error("Failed to create framebuffer!");
+            }
+    
+            this.renderbufferId = {val: renderbufferId};
+    
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.renderbufferId.val);
+    
+            this.gl.renderbufferStorage(this.gl.RENDERBUFFER, createInfo.renderBufferCreateInfo.format, createInfo.renderBufferCreateInfo.width, createInfo.renderBufferCreateInfo.height);
+            this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, createInfo.renderBufferCreateInfo.attachmentType, this.gl.RENDERBUFFER, this.renderbufferId.val);
+            
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
         }
-
-        this.renderbufferId = {val: renderbufferId};
-
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
-        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.renderbufferId.val);
-
-        this.gl.renderbufferStorage(this.gl.RENDERBUFFER, renderbufferInfo.format, renderbufferInfo.width, renderbufferInfo.height);
-        this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, renderbufferInfo.attachmentType, this.gl.RENDERBUFFER, this.renderbufferId.val);
-        
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
     }
 
     public Destroy() : void 
@@ -127,8 +138,8 @@ export class Framebuffer
     public GetFramebufferId() : Ref<WebGLFramebuffer> { return this.framebufferId};
     public GetRenderbufferId() : Ref<WebGLRenderbuffer | null> { return this.renderbufferId;}
 
-    public framebufferInfo !: FramebufferCreateInfo;
-    public renderBufferInfo !: RenderbufferCreateInfo;
+    public framebufferInfo : FramebufferCreateInfo;
+    public renderBufferInfo : RenderbufferCreateInfo | null = null;
 
     private framebufferId : Ref<WebGLFramebuffer>;
     private renderbufferId : Ref<WebGLRenderbuffer | null>;

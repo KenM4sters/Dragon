@@ -1,29 +1,47 @@
 import * as glm from "gl-matrix";
 import { Framebuffer } from "./framebuffer";
-import { Renderer } from "./renderer";
-import { Primitives } from "../primitives";
+
+export interface RenderStageCreateInfo 
+{
+    viewport: {width : number, height : number}
+    clearColor : glm.vec4;
+    depthTest : boolean;
+    depthFunc : number;
+    blending : boolean;
+    blendFunc : number;
+};
 
 export class RenderStage 
 {
-    constructor(renderer : Renderer, readBuffer : Framebuffer) 
+    constructor(readBuffer : Framebuffer | null, writeBuffer : Framebuffer | null, createInfo : RenderStageCreateInfo) 
     {
         this.readBuffer = readBuffer;
-        this.renderer = renderer;
-    }
-
-    public SetWriteBuffer(writeBuffer : Framebuffer) : void 
-    {
         this.writeBuffer = writeBuffer;
+
+        this.viewport = createInfo.viewport;
+        this.clearColor = createInfo.clearColor;
+        this.depthTest = createInfo.depthTest;
+        this.depthFunc = createInfo.depthFunc;
+        this.blending = createInfo.blending;
+        this.blendFunc = createInfo.blendFunc;
     }
 
-    
+    public Destroy() : void 
+    {
+        this.writeBuffer?.Destroy();
+    }
 
-    public GetReadBuffer() : Framebuffer { return this.readBuffer; }
+    public GetReadBuffer() : Framebuffer | null { return this.readBuffer; }
     public GetWriteBuffer() : Framebuffer | null { return this.writeBuffer; }
 
-    private readBuffer : Framebuffer;
+
+    private readBuffer : Framebuffer | null = null;
     private writeBuffer : Framebuffer | null = null;
 
     public clearColor : glm.vec4;
-    public depthTest : number;
+    public depthTest : boolean;
+    public depthFunc : number;
+    public viewport : {width: number, height: number};
+    public blending : boolean;
+    public blendFunc : number;
 }

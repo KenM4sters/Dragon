@@ -7,13 +7,14 @@ import { BoxGeometry } from "../geometry";
 import { BasicMaterial, PhysicalMaterial } from "../material";
 import { Framebuffer, FramebufferCreateInfo, RenderbufferCreateInfo } from "./framebuffer";
 import { RawTexture2D } from "./texture";
-import { Pass } from "./specialfx/pass";
 import { Mesh } from "../mesh";
 import { Scene } from "../scene";
 import { Light, PointLight } from "../light";
 
 import passVert from "../resources/Raw.vert?raw";
 import hdrFrag from "../resources/HDR.frag?raw";
+import { RenderStage, RenderStageCreateInfo } from "./renderStage";
+import { Primitives} from "../export";
 
 export class Graphics implements Layer
 {
@@ -27,30 +28,63 @@ export class Graphics implements Layer
 
     public Update(scene : Scene, camera : PerspectiveCamera, elapsedTime : number, timeStep : number) : void 
     {
-        this.renderer.BeginStage(this.stages.get("SceneStage") as RenderStage);
+        const screenStage = this.stages.get("SceneStage");
 
-        if(camera.width != this.width || camera.height != this.height) 
+        if(screenStage) 
+        {            
+            this.renderer.BeginStage(screenStage);
+    
+            if(camera.width != this.width || camera.height != this.height) 
+            {
+                camera.UpdateProjectionMatrix(this.width, this.height);
+                camera.UpdateViewMatrix();
+            }
+    
+            const children = scene.GetAllChildren();
+    
+            for(const mesh of children.meshes)  
+            {   
+                mesh.UpdateUniforms(camera, children.lights);
+    
+                if(mesh.userUpdateCallback) 
+                {
+                    mesh.userUpdateCallback(mesh, elapsedTime, timeStep);
+                }
+    
+                if(mesh.geometry instanceof BoxGeometry && mesh.material instanceof PhysicalMaterial) 
+                {             
+                    this.renderer.RenderCube(mesh.geometry.GetVertexArray(), mesh.material.GetShader());
+                }
+            } 
+
+            this.renderer.EndStage();
+        }
+   
+
+        const hdrStage = this.stages.get("HDRStage");
+
+        if(hdrStage) 
         {
-            camera.UpdateProjectionMatrix(this.width, this.height);
-            camera.UpdateViewMatrix();
+            this.renderer.BeginStage(hdrStage);
+
+            this.gl.useProgram(this.screenQuad.GetShader().GetId().val);
+    
+            const readBuffer = hdrStage.GetReadBuffer();
+
+            if(readBuffer) 
+            {   
+                this.gl.bindTexture(readBuffer.framebufferInfo.dimension, readBuffer.framebufferInfo.targetTexture.GetId().val);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "tex"), 0);
+            }
+
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            this.renderer.RenderQuad(this.screenQuad.GetVertexArray(), this.screenQuad.GetShader());
+
+            this.renderer.EndStage();
         }
 
-        const children = scene.GetAllChildren();
 
-        for(const mesh of children.meshes)  
-        {   
-            mesh.UpdateUniforms(camera, children.lights);
 
-            if(mesh.userUpdateCallback) 
-            {
-                mesh.userUpdateCallback(mesh, elapsedTime, timeStep);
-            }
-
-            if(mesh.geometry instanceof BoxGeometry && mesh.material instanceof PhysicalMaterial) 
-            {                
-                this.renderer.RenderCube(mesh.geometry.GetVertexArray(), mesh.material.GetShader());
-            }
-        } 
     }   
 
     public SetSizes(width: number, height: number) 
@@ -67,36 +101,8 @@ export class Graphics implements Layer
         this.width = width;
         this.height = height;
         
-        const webgl = WebGL.GetInstance();
-
-        webgl.canvas.width = this.width;
-        webgl.canvas.height = this.height;
-        webgl.gl.viewport(0, 0, this.width, this.height);
-
-        const framebufferInfo : FramebufferCreateInfo = 
-        {
-            targetTexture: new RawTexture2D(),
-            dimension: this.gl.TEXTURE_2D,
-            format: this.gl.RGB,
-            width: this.width,
-            height: this.height,
-            nChannels: this.gl.RGB,
-            type: this.gl.UNSIGNED_BYTE,
-            data: null,
-            minFilter: this.gl.LINEAR,
-            magFilter: this.gl.LINEAR,
-            sWrap: this.gl.REPEAT,
-            tWrap: this.gl.REPEAT,
-            attachmentUnit: 0
-        };
-        
-        const renderBufferInfo : RenderbufferCreateInfo = 
-        {
-            width: this.width,
-            height: this.height,
-            format: this.gl.DEPTH24_STENCIL8,
-            attachmentType: this.gl.DEPTH_STENCIL_ATTACHMENT 
-        };
+        this.gl.canvas.width = this.width;
+        this.gl.canvas.height = this.height;
 
         // Scene stage.
         //
@@ -107,14 +113,45 @@ export class Graphics implements Layer
             sceneStage.Destroy();          
         }
 
-        sceneStage = new RenderStage(new Framebuffer());
-        sceneStage.CreateStage(framebufferInfo, renderBufferInfo);
+        const sceneFrameInfo : FramebufferCreateInfo = 
+        {
+            targetTexture: new RawTexture2D(),
+            dimension: this.gl.TEXTURE_2D,
+            format: this.gl.RGBA16F,
+            width: this.width,
+            height: this.height,
+            nChannels: this.gl.RGBA,
+            type: this.gl.FLOAT,
+            data: null,
+            minFilter: this.gl.LINEAR,
+            magFilter: this.gl.LINEAR,
+            sWrap: this.gl.REPEAT,
+            tWrap: this.gl.REPEAT,
+            attachmentUnit: 0,
+            renderBufferCreateInfo: 
+            {
+                width: this.width,
+                height: this.height,
+                format: this.gl.DEPTH24_STENCIL8,
+                attachmentType: this.gl.DEPTH_STENCIL_ATTACHMENT 
+            }
+        };
+
+        const sceneStageInfo : RenderStageCreateInfo = 
+        {
+            viewport: {width: this.width, height: this.height},
+            clearColor: [0.1, 0.1, 0.1, 1.0],
+            depthTest: true,
+            depthFunc: this.gl.LEQUAL,
+            blending: false,
+            blendFunc: this.gl.ONE
+        }
+
+        const sceneWriteBuffer = new Framebuffer(sceneFrameInfo);
+
+        sceneStage = new RenderStage(null, sceneWriteBuffer, sceneStageInfo);
 
         this.stages.set("SceneStage", sceneStage);
-
-        // Bloom Stage.
-        //
-
 
 
         // Final HDR stage.
@@ -126,8 +163,19 @@ export class Graphics implements Layer
             hdrStage.Destroy();    
         }
 
-        hdrStage = new RenderStage(new Framebuffer());
-        this.stages.set("HDRStage", hdrStage);
+        const hdrStageInfo : RenderStageCreateInfo = 
+        {
+            viewport: {width: this.width, height: this.height},
+            clearColor: [0.1, 0.1, 0.1, 1.0],
+            depthTest: true,
+            depthFunc: this.gl.LEQUAL,
+            blending: false,
+            blendFunc: this.gl.ONE
+        };
+
+        hdrStage = new RenderStage(sceneStage.GetWriteBuffer(), null, hdrStageInfo);
+
+        this.stages.set("HDRStage", hdrStage);  
     }
 
 
@@ -147,7 +195,10 @@ export class Graphics implements Layer
     }
 
     private renderer : Renderer = new Renderer();
-    private stages : Map<string, RenderStage> = new Map<string, RenderStage>();
+
+    private screenQuad : Primitives.Square = new Primitives.Square(passVert, hdrFrag);
+
+    private stages : Map<String, RenderStage> = new Map<String, RenderStage>();
 
     private gl : WebGL2RenderingContext;
 
