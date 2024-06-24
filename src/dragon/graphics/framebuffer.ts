@@ -32,8 +32,12 @@ export class Framebuffer
 {
     constructor(createInfo : FramebufferCreateInfo) 
     {
-        this.gl = WebGL.GetInstance().gl;
+        this.Create(createInfo);
+    }
 
+    public Create(createInfo : FramebufferCreateInfo) : void
+    {
+        this.gl = WebGL.GetInstance().gl;
 
         // Create native framebuffer id
         //
@@ -123,12 +127,13 @@ export class Framebuffer
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
         }
-    }
+    };
 
     public Destroy() : void 
     {
         this.gl.deleteFramebuffer(this.framebufferId.val);
         this.gl.deleteRenderbuffer(this.renderbufferId.val);
+        
         if(this.framebufferInfo) 
         {
             this.framebufferInfo.targetTexture.Destroy();
@@ -138,10 +143,12 @@ export class Framebuffer
     public GetFramebufferId() : Ref<WebGLFramebuffer> { return this.framebufferId};
     public GetRenderbufferId() : Ref<WebGLRenderbuffer | null> { return this.renderbufferId;}
 
-    public framebufferInfo : FramebufferCreateInfo;
+    public framebufferInfo !: FramebufferCreateInfo;
     public renderBufferInfo : RenderbufferCreateInfo | null = null;
 
-    private framebufferId : Ref<WebGLFramebuffer>;
-    private renderbufferId : Ref<WebGLRenderbuffer | null>;
-    private gl : WebGL2RenderingContext;
+    private framebufferId !: Ref<WebGLFramebuffer>;
+    private renderbufferId !: Ref<WebGLRenderbuffer | null>;
+    private gl !: WebGL2RenderingContext;
 };
+
+

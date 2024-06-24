@@ -1,17 +1,21 @@
-import { PerspectiveCamera } from "./camera";
 import { Graphics } from "./graphics/graphics";
-import { Scene } from "./scene";
+import { Scene } from "./scene/scene";
+import { Layer, WebGL } from "./webgl";
 
 
 export class Dragon 
 {
     constructor() 
     {
+        this.graphics = new Graphics();
+        this.scene = new Scene(this.graphics);
+
+        window.addEventListener("resize", () => this.OnResize());
     }
 
     public SetAnimationLoop(callback: (elapsedTime: number, timeStep: number) => void): void 
     {
-        this.scriptLoop = callback;
+        this.animationCallback = callback;
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
     }
 
@@ -21,10 +25,9 @@ export class Dragon
         this.timeStep = elapsedTime - this.lastFrame;
         this.lastFrame = elapsedTime;
 
-
-        if(this.scriptLoop) 
+        if(this.animationCallback) 
         {
-            this.scriptLoop(elapsedTime, this.timeStep);
+            this.animationCallback(elapsedTime, this.timeStep);
         }
 
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
@@ -32,24 +35,40 @@ export class Dragon
 
     public Update() : void 
     {
-        if(this.camera != undefined && this.graphics != undefined && this.scene != undefined) 
+        if(this.graphics != undefined) 
         {
-            this.graphics.Update(this.scene, this.camera, this.elapsedTime, this.timeStep);
+            this.graphics.Update(this.scene, this.elapsedTime, this.timeStep);
         }
     }
+
+    public OnResize(): void 
+    {
+        let newWidth = window.innerWidth;
+        let newHeight = window.innerHeight;
+
+        let canvas = WebGL.GetInstance().canvas;
+
+        if(canvas.width != newWidth || canvas.height != newHeight) 
+        {
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            this.scene.Resize(canvas.width, canvas.height);
+            this.graphics.Resize(canvas.width, canvas.height);
+        }
+    }   
 
     public Stop(): void 
     {
         cancelAnimationFrame(this.animationFrameId); 
 
-        this.scriptLoop = undefined; 
+        this.animationCallback = undefined; 
     }
     
-    public scene : Scene = new Scene();
-    public camera : PerspectiveCamera | undefined = undefined;
-    public graphics : Graphics | undefined = undefined;
+    public graphics : Graphics;
+    public scene : Scene;
 
-    private scriptLoop !: ((elapsedTime :number, timeStep : number) => void) | undefined;
+    private animationCallback !: ((elapsedTime :number, timeStep : number) => void) | undefined;
     private animationFrameId : number = 0;
     private lastFrame : number = 0;
     private elapsedTime : number = 0;

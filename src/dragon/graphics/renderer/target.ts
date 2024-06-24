@@ -1,7 +1,8 @@
 import * as glm from "gl-matrix";
-import { Framebuffer } from "./framebuffer";
+import { Framebuffer, FramebufferCreateInfo } from "../framebuffer";
 
-export interface RenderStageCreateInfo 
+
+export interface RenderTargetCreateInfo 
 {
     viewport: {width : number, height : number}
     clearColor : glm.vec4;
@@ -11,12 +12,28 @@ export interface RenderStageCreateInfo
     blendFunc : number;
 };
 
-export class RenderStage 
+export class RenderTarget 
 {
-    constructor(readBuffer : Framebuffer | null, writeBuffer : Framebuffer | null, createInfo : RenderStageCreateInfo) 
+    constructor(readBuffer : Framebuffer | null, writeBuffer : Framebuffer | null, createInfo : RenderTargetCreateInfo) 
     {
         this.readBuffer = readBuffer;
         this.writeBuffer = writeBuffer;
+
+        this.viewport = createInfo.viewport;
+        this.clearColor = createInfo.clearColor;
+        this.depthTest = createInfo.depthTest;
+        this.depthFunc = createInfo.depthFunc;
+        this.blending = createInfo.blending;
+        this.blendFunc = createInfo.blendFunc;
+    }
+
+    public Recreate(FramebufferCreateInfo : FramebufferCreateInfo, createInfo : RenderTargetCreateInfo) : void 
+    {
+
+        if(this.writeBuffer) 
+        {
+            this.writeBuffer.Create(FramebufferCreateInfo);
+        }
 
         this.viewport = createInfo.viewport;
         this.clearColor = createInfo.clearColor;

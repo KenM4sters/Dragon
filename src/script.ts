@@ -16,13 +16,17 @@ export class Script extends DRAGON.IScript
     constructor() 
     {
         super();
-         
-        this.dragon.camera = new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0));
+
+        
+        this.dragon.scene = new DRAGON.Scene(this.dragon.graphics);
+
+        this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0)));
 
         let mat = new DRAGON.PhysicalMaterial();
         mat.ao = 2.0;
         mat.roughenss = 0.3;
         mat.metallic = 0.7;
+
         let geo = new DRAGON.BoxGeometry();
         let cube = new DRAGON.Mesh(geo, mat);
 
@@ -37,6 +41,15 @@ export class Script extends DRAGON.IScript
         this.dragon.graphics = new DRAGON.Graphics();
         this.dragon.graphics.SetSizes(window.innerWidth, window.innerHeight);
 
+
+        const hdrInfo : DRAGON.HDRPassCreateInfo = 
+        {
+            exposure: 1.0
+        };
+
+        const hdrStage = new DRAGON.HDRPass(this.dragon.graphics.GetRenderer(), this.dragon.scene.renderTarget, hdrInfo);
+        this.dragon.graphics.specialFx.set("HDRStage", hdrStage);
+
         this.dragon.SetAnimationLoop(this.Loop);
     }
 
@@ -44,5 +57,5 @@ export class Script extends DRAGON.IScript
     {   
         this.dragon.Update();
     }
-
+    
 };

@@ -4,7 +4,7 @@ import { Geometry } from "./geometry";
 import { Material, PhysicalMaterial } from "./material";
 import { PerspectiveCamera } from "./camera";
 import { Light, PointLight } from "./light";
-import { WebGL } from "./webgl";
+import { WebGL } from "../webgl";
 
 
 type MeshUpdateCallback = (mesh : Mesh, elapsedTime : number, timeStep : number) => void

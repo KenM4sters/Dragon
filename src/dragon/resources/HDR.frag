@@ -6,8 +6,10 @@ out vec4 FragColor;
 in vec2 vUV;
 
 uniform sampler2D tex;
+uniform float exposure;
 
-vec3 ACESFilm(vec3 x) {
+vec3 ACESFilm(vec3 x) 
+{
     const float A = 2.51;
     const float B = 0.03;
     const float C = 2.43;

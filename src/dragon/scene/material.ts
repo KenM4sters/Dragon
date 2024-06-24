@@ -1,11 +1,12 @@
-import { Shader } from "./graphics/shader";
 import * as glm from "gl-matrix";
+
 // Shaders
 //
-import mvpVert from "./resources/ModelViewProjection.vert?raw";
-import rawFrag from "./resources/Raw.frag?raw";
+import mvpVert from "../resources/ModelViewProjection.vert?raw";
+import rawFrag from "../resources/Raw.frag?raw";
 
-import pbrFrag from "./resources/PhysicalMaterial.frag?raw";
+import pbrFrag from "../resources/PhysicalMaterial.frag?raw";
+import { Shader } from "../export";
 
 
 export abstract class Material 

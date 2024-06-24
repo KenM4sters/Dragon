@@ -4,7 +4,7 @@
  */
 export interface Layer 
 {
-    OnResize() : void;
+    Resize(width : number, height : number) : void;
 };
 
 /**
@@ -18,11 +18,13 @@ export class Ref<T> {
 /**
  * @brief Singleton class to act as our entry point.
  */
-export class WebGL implements Layer 
+export class WebGL 
 {
     private constructor() 
     {        
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         
         this.gl = this.canvas.getContext('webgl2', { antialias: true }) as WebGL2RenderingContext;
         if (!this.gl) throw new Error("webgl context is not available!");
@@ -39,13 +41,7 @@ export class WebGL implements Layer
             throw new Error('OES_texture_float_linear is not supported')
         };
     }
-    
-    public OnResize() : void 
-    {
-
-    }
-
-            
+                
     // Public static method to get the instance of the class
     public static GetInstance() : WebGL 
     {
