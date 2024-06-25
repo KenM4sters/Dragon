@@ -17,7 +17,7 @@ export class Graphics implements Layer
                     
         for(const pass of this.specialFx) 
         {
-            pass[1].Render(elapsedTime, timeStep);
+            pass.Render(elapsedTime, timeStep);
         }
     }
 
@@ -39,7 +39,7 @@ export class Graphics implements Layer
 
         for(const pass of this.specialFx) 
         {
-            pass[1].Resize(width, height)
+            pass.Resize(width, height)
         }
     }
 
@@ -47,7 +47,7 @@ export class Graphics implements Layer
     public GetRenderer() : Renderer { return this.renderer; }
 
 
-    public specialFx : Map<string, SpecialFXPass> = new Map<string, SpecialFXPass>();
+    public specialFx : Array<SpecialFXPass> = Array<SpecialFXPass>();
     
     private renderer : Renderer = new Renderer();
     private gl : WebGL2RenderingContext;

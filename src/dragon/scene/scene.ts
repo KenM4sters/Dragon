@@ -1,4 +1,4 @@
-import { Graphics, RawTexture2D } from "../export";
+import { Graphics, RawTexture2D, RawTextureCreateInfo } from "../export";
 import { Framebuffer, FramebufferCreateInfo } from "../graphics/framebuffer";
 import { Renderer } from "../graphics/renderer/renderer";
 import { RenderTarget, RenderTargetCreateInfo } from "../graphics/renderer/target";
@@ -19,21 +19,29 @@ export class Scene
         this.gl = WebGL.GetInstance().gl;
 
         const canvas = WebGL.GetInstance().canvas;
-        
-        const sceneFrameInfo : FramebufferCreateInfo = 
+
+        const writeTex : RawTextureCreateInfo = 
         {
-            targetTexture: new RawTexture2D(),
             dimension: this.gl.TEXTURE_2D,
-            format: this.gl.RGBA16F,
+            format: this.gl.RGBA32F,
             width: canvas.width,
             height: canvas.height,
             nChannels: this.gl.RGBA,
             type: this.gl.FLOAT,
             data: null,
-            minFilter: this.gl.LINEAR,
-            magFilter: this.gl.LINEAR,
-            sWrap: this.gl.REPEAT,
-            tWrap: this.gl.REPEAT,
+            samplerInfo: 
+            {      
+                dimension: this.gl.TEXTURE_2D,      
+                minFilter: this.gl.LINEAR,
+                magFilter: this.gl.LINEAR,
+                sWrap: this.gl.REPEAT,
+                tWrap: this.gl.REPEAT,
+            }
+        };
+        
+        const sceneFrameInfo : FramebufferCreateInfo = 
+        {
+            targetTexture: new RawTexture2D(writeTex),
             attachmentUnit: 0,
             renderBufferCreateInfo: 
             {
@@ -123,20 +131,28 @@ export class Scene
             this.renderTarget.Destroy();          
         }
 
-        const sceneFrameInfo : FramebufferCreateInfo = 
+        const writeTex : RawTextureCreateInfo = 
         {
-            targetTexture: new RawTexture2D(),
             dimension: this.gl.TEXTURE_2D,
-            format: this.gl.RGBA16F,
+            format: this.gl.RGBA32F,
             width: width,
             height: height,
             nChannels: this.gl.RGBA,
             type: this.gl.FLOAT,
             data: null,
-            minFilter: this.gl.LINEAR,
-            magFilter: this.gl.LINEAR,
-            sWrap: this.gl.REPEAT,
-            tWrap: this.gl.REPEAT,
+            samplerInfo: 
+            {      
+                dimension: this.gl.TEXTURE_2D,      
+                minFilter: this.gl.LINEAR,
+                magFilter: this.gl.LINEAR,
+                sWrap: this.gl.REPEAT,
+                tWrap: this.gl.REPEAT,
+            }
+        };
+        
+        const sceneFrameInfo : FramebufferCreateInfo = 
+        {
+            targetTexture: new RawTexture2D(writeTex),
             attachmentUnit: 0,
             renderBufferCreateInfo: 
             {

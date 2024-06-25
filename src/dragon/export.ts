@@ -11,6 +11,7 @@ export * from "./primitives";
 export * from "./graphics/renderer/pass";
 export * from "./graphics/graphics";
 export * from "./graphics/specialFX/hdr";
+export * from "./graphics/specialFX/bloom";
 export * from "./graphics/buffer";
 export * from "./graphics/vertexArray";
 export * from "./graphics/shader";

@@ -44,12 +44,23 @@ export class Script extends DRAGON.IScript
 
         const hdrInfo : DRAGON.HDRPassCreateInfo = 
         {
-            exposure: 1.0
+            exposure: 1.0,
+            bloomStrength: 0.2,
         };
 
-        const hdrStage = new DRAGON.HDRPass(this.dragon.graphics.GetRenderer(), this.dragon.scene.renderTarget, hdrInfo);
-        this.dragon.graphics.specialFx.set("HDRStage", hdrStage);
 
+        const bloomInfo : DRAGON.BloomPassCreateInfo = 
+        {
+            levels: 1,
+            filterRadius: 0.001,
+            strength: 1.0,
+            threshold: 1.0
+        }
+    
+        const bloomStage = new DRAGON.BloomPass(this.dragon.graphics.GetRenderer(), [this.dragon.scene.renderTarget], bloomInfo);
+        const hdrStage = new DRAGON.HDRPass(this.dragon.graphics.GetRenderer(), [bloomStage.GetWriteTarget(), this.dragon.scene.renderTarget], hdrInfo);
+        this.dragon.graphics.specialFx.push(bloomStage);
+        this.dragon.graphics.specialFx.push(hdrStage);
         this.dragon.SetAnimationLoop(this.Loop);
     }
 

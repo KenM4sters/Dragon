@@ -5,17 +5,6 @@ import { Ref, WebGL } from "../webgl";
 export interface FramebufferCreateInfo 
 {
     targetTexture : RawTexture2D;
-    dimension : number;
-    format : number;  
-    width : number;
-    height : number;
-    nChannels : number;
-    type: number;
-    data : Float32Array | Uint8Array | Uint16Array | Uint32Array | null;
-    minFilter : number;
-    magFilter : number;
-    sWrap : number;
-    tWrap : number;
     attachmentUnit : number;
     renderBufferCreateInfo : RenderbufferCreateInfo | null;
 }; 
@@ -53,36 +42,11 @@ export class Framebuffer
         this.framebufferInfo = createInfo;
 
 
-        // Create Texture object.
-        //
-        createInfo.targetTexture.CreateTextureImage2D(
-        {
-            dimension: createInfo.dimension,
-            format: createInfo.format,  
-            width: createInfo.width,
-            height: createInfo.height,
-            nChannels: createInfo.nChannels,
-            type: createInfo.type,
-            data: createInfo.data
-        });
-
-
-        // Create Sampler.
-        //  
-        createInfo.targetTexture.CreateSampler(
-        {
-            dimension: createInfo.dimension,
-            minFilter: createInfo.minFilter,
-            magFilter: createInfo.magFilter,
-            sWrap: createInfo.sWrap,
-            tWrap: createInfo.tWrap
-        });
-
-
         // Create native framebuffer
         //
+        const texInfo = createInfo.targetTexture.GetTextureInfo();
         const attachmentUnit = this.gl.COLOR_ATTACHMENT0 + createInfo.attachmentUnit;
-        this.gl.bindTexture(createInfo.dimension, createInfo.targetTexture.GetId().val); 
+        this.gl.bindTexture(texInfo.dimension, createInfo.targetTexture.GetId().val); 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
         
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentUnit, 
@@ -90,7 +54,7 @@ export class Framebuffer
             createInfo.targetTexture.GetId().val, 0); 
         
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        this.gl.bindTexture(createInfo.dimension, null);
+        this.gl.bindTexture(texInfo.dimension, null);
         
 
         // Check for any errors.
@@ -128,6 +92,16 @@ export class Framebuffer
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
         }
     };
+
+    public SetColorAttachment(texture : RawTexture2D, attachmentUnit : number) 
+    {
+        const unit = this.gl.COLOR_ATTACHMENT0 + attachmentUnit;
+        
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, unit, 
+            texture.GetTextureInfo().dimension, 
+            texture.GetId().val, 0); 
+    }
 
     public Destroy() : void 
     {

@@ -65,8 +65,12 @@ export class Renderer
     {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         this.gl.useProgram(null);
+        this.gl.activeTexture(this.gl.TEXTURE0)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this.gl.activeTexture(this.gl.TEXTURE1)
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
         this.gl.bindTexture(this.gl.TEXTURE_3D, null);
+        this.gl.activeTexture(this.gl.TEXTURE0);
     }
 
     private renderTarget : RenderTarget;
