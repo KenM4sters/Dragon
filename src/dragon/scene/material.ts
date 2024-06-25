@@ -2,10 +2,10 @@ import * as glm from "gl-matrix";
 
 // Shaders
 //
-import mvpVert from "../resources/ModelViewProjection.vert?raw";
-import rawFrag from "../resources/Raw.frag?raw";
+import mvpVert from "../resources/shaders/ModelViewProjection.vert?raw";
+import rawFrag from "../resources/shaders/Raw.frag?raw";
 
-import pbrFrag from "../resources/PhysicalMaterial.frag?raw";
+import pbrFrag from "../resources/shaders/PhysicalMaterial.frag?raw";
 import { Shader } from "../export";
 
 

@@ -3,16 +3,15 @@ import { SpecialFXPass } from "../renderer/pass";
 import { Renderer } from "../renderer/renderer";
 import { RenderTarget, RenderTargetCreateInfo } from "../renderer/target";
 import { Primitives } from "../../primitives";
-
 import { Framebuffer, FramebufferCreateInfo } from "../framebuffer";
 import { RawTexture2D, RawTextureCreateInfo } from "../texture";
 import { Shader } from "../shader";
-import { WebGL } from '../../webgl';
 
-import upSamplingFrag from "../../resources/UpSampling.frag?raw";
-import downSamplingFrag from "../../resources/DownSampling.frag?raw";
-import rawVert from "../../resources/Raw.vert?raw"; 
-import textureFrag from "../../resources/Texture.frag?raw"; 
+
+import upSamplingFrag from "../../resources/shaders/UpSampling.frag?raw";
+import downSamplingFrag from "../../resources/shaders/DownSampling.frag?raw";
+import rawVert from "../../resources/shaders/Raw.vert?raw"; 
+import textureFrag from "../../resources/shaders/Texture.frag?raw"; 
 
 export interface BloomPassCreateInfo  
 {

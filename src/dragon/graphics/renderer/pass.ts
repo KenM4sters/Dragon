@@ -1,5 +1,4 @@
 import { Primitives } from "../../primitives";
-import { PerspectiveCamera } from "../../scene/camera";
 import { WebGL } from "../../webgl";
 import { Renderer } from "./renderer";
 import { RenderTarget } from "./target";

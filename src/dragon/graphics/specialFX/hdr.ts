@@ -3,8 +3,8 @@ import { Renderer } from "../renderer/renderer";
 import { RenderTarget, RenderTargetCreateInfo } from "../renderer/target";
 import { Primitives } from "../../primitives";
 
-import passVert from "../../resources/Raw.vert?raw";
-import hdrFrag from "../../resources/HDR.frag?raw";
+import passVert from "../../resources/shaders/Raw.vert?raw";
+import hdrFrag from "../../resources/shaders/HDR.frag?raw";
 
 
 export interface HDRPassCreateInfo 

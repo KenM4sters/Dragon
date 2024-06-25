@@ -1,6 +1,6 @@
 import { Graphics } from "./graphics/graphics";
 import { Scene } from "./scene/scene";
-import { Layer, WebGL } from "./webgl";
+import { WebGL } from "./webgl";
 
 
 export class Dragon 
