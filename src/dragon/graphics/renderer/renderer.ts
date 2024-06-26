@@ -1,7 +1,7 @@
 import { WebGL } from "../../webgl";
 import { Shader } from "../shader";
 import { VertexArray } from "../vertexArray";
-import { RenderTarget, RenderTargetCreateInfo } from "./target";
+import { RenderTarget } from "./target";
 
 
 export class Renderer 
@@ -10,18 +10,6 @@ export class Renderer
     {
         this.gl = WebGL.GetInstance().gl;
         this.gl.enable(this.gl.DEPTH_TEST);
-
-        const defaultInfo : RenderTargetCreateInfo = 
-        {
-            viewport: {width: window.innerWidth, height: window.innerHeight},
-            clearColor: [0.1, 0.1, 0.1, 1.0],
-            blending: false,
-            blendFunc: this.gl.ONE,
-            depthTest: true,
-            depthFunc: this.gl.LEQUAL
-        }
-
-        this.renderTarget = new RenderTarget(null, null, defaultInfo);
     }
 
     public Draw(vertexArray : VertexArray, shader : Shader, verticesCount : number) 
@@ -30,24 +18,16 @@ export class Renderer
         this.gl.useProgram(shader.GetId().val);
     
         this.gl.drawArrays(this.gl.TRIANGLES, 0, verticesCount);
-        
-        this.gl.bindVertexArray(null);
-        this.gl.useProgram(null);
     }
 
     public SetRenderTarget(renderTarget : RenderTarget) : void 
     {
-        this.renderTarget = renderTarget;
-
-        this.gl.viewport(0, 0, this.renderTarget.viewport.width, this.renderTarget.viewport.height);
-
-        if(this.renderTarget.depthTest) 
-        {
-            this.gl.enable(this.gl.DEPTH_TEST);
-            this.gl.depthFunc(this.renderTarget.depthFunc);
-        }  
+        this.gl.viewport(0, 0, renderTarget.viewport.width, renderTarget.viewport.height);
+        this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.depthFunc(renderTarget.depthFunc);
             
-        const writeBuffer = this.renderTarget.GetWriteBuffer();
+        const writeBuffer = renderTarget.writeBuffer;
+
         if(writeBuffer) 
         {
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, writeBuffer.GetFramebufferId().val);
@@ -58,7 +38,6 @@ export class Renderer
         }
                 
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        this.gl.clearColor(this.renderTarget.clearColor[0], this.renderTarget.clearColor[1], this.renderTarget.clearColor[2], this.renderTarget.clearColor[3]);
     }
 
     public End() : void
@@ -73,6 +52,5 @@ export class Renderer
         this.gl.activeTexture(this.gl.TEXTURE0);
     }
 
-    private renderTarget : RenderTarget;
     public gl : WebGL2RenderingContext;
 };

@@ -65,10 +65,31 @@ export class RawTexture2D extends Texture
 
         this.gl.texImage2D(createInfo.dimension, 0, createInfo.format, createInfo.width, createInfo.height, 0, createInfo.nChannels, createInfo.type, createInfo.data);
         
+        // Check for texture errors
+        if (this.gl.getError() !== this.gl.NO_ERROR) 
+        {
+            console.error("Error with texture binding or creation");
+        }
+
         this.gl.bindTexture(createInfo.dimension, null);
     } 
-    
 
+    public Resize(createInfo : RawTextureCreateInfo) : void
+    {
+        this.textureInfo = createInfo;
+        
+        this.gl.bindTexture(createInfo.samplerInfo.dimension, this.id.val);
+        this.gl.texImage2D(createInfo.dimension, 0, createInfo.format, createInfo.width, createInfo.height, 0, createInfo.nChannels, createInfo.type, createInfo.data);
+
+        // Check for texture errors
+        if (this.gl.getError() !== this.gl.NO_ERROR) 
+        {
+            console.error("Error with texture binding or creation");
+        }
+        
+        this.gl.bindTexture(createInfo.dimension, null);
+    }
+    
     public GetTextureInfo() : RawTextureCreateInfo { return this.textureInfo; }
 
     private textureInfo !: RawTextureCreateInfo;

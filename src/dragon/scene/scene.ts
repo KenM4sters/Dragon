@@ -20,7 +20,7 @@ export class Scene
 
         const canvas = WebGL.GetInstance().canvas;
 
-        const writeTex : RawTextureCreateInfo = 
+        const writeTexInfo : RawTextureCreateInfo = 
         {
             dimension: this.gl.TEXTURE_2D,
             format: this.gl.RGBA32F,
@@ -38,10 +38,12 @@ export class Scene
                 tWrap: this.gl.REPEAT,
             }
         };
+
+        this.writeTexture = new RawTexture2D(writeTexInfo);
         
         const sceneFrameInfo : FramebufferCreateInfo = 
         {
-            targetTexture: new RawTexture2D(writeTex),
+            targetTexture: this.writeTexture,
             attachmentUnit: 0,
             renderBufferCreateInfo: 
             {
@@ -55,16 +57,13 @@ export class Scene
         const sceneStageInfo : RenderTargetCreateInfo = 
         {
             viewport: {width: canvas.width, height: canvas.height},
-            clearColor: [0.1, 0.1, 0.1, 1.0],
-            depthTest: true,
             depthFunc: this.gl.LEQUAL,
-            blending: false,
             blendFunc: this.gl.ONE
         }
 
         const writeBuffer = new Framebuffer(sceneFrameInfo);
 
-        this.renderTarget = new RenderTarget(null, writeBuffer, sceneStageInfo);
+        this.renderTarget = new RenderTarget(writeBuffer, sceneStageInfo);
 
         this.camera = new PerspectiveCamera([0, 0, 5]);
         
@@ -101,6 +100,7 @@ export class Scene
         this.camera.UpdateViewMatrix();
 
         this.renderer.SetRenderTarget(this.renderTarget);
+        this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
 
         const children = this.GetAllChildren();
     
@@ -126,12 +126,7 @@ export class Scene
     {
         this.camera.UpdateProjectionMatrix(width, height);
 
-        if(this.renderTarget) 
-        {            
-            this.renderTarget.Destroy();          
-        }
-
-        const writeTex : RawTextureCreateInfo = 
+        const writeTexInfo : RawTextureCreateInfo = 
         {
             dimension: this.gl.TEXTURE_2D,
             format: this.gl.RGBA32F,
@@ -149,38 +144,24 @@ export class Scene
                 tWrap: this.gl.REPEAT,
             }
         };
-        
-        const sceneFrameInfo : FramebufferCreateInfo = 
-        {
-            targetTexture: new RawTexture2D(writeTex),
-            attachmentUnit: 0,
-            renderBufferCreateInfo: 
-            {
-                width: width,
-                height: height,
-                format: this.gl.DEPTH24_STENCIL8,
-                attachmentType: this.gl.DEPTH_STENCIL_ATTACHMENT 
-            }
-        };
+
+        this.writeTexture.Resize(writeTexInfo);
 
         const sceneStageInfo : RenderTargetCreateInfo = 
         {
             viewport: {width: width, height: height},
-            clearColor: [0.1, 0.1, 0.1, 1.0],
-            depthTest: true,
             depthFunc: this.gl.LEQUAL,
-            blending: false,
             blendFunc: this.gl.ONE
         }
 
-        this.renderTarget.Recreate(sceneFrameInfo, sceneStageInfo);
+        this.renderTarget.Resize(width, height, sceneStageInfo);
     }
     
     public renderTarget : RenderTarget;
+    public writeTexture : RawTexture2D;
     
     private meshes : Array<Mesh> = new Array<Mesh>();
     private lights : Array<Light> = new Array<Light>()
-
     private camera : PerspectiveCamera;
 
     private renderer : Renderer;

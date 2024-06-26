@@ -1,7 +1,7 @@
 import { Layer, WebGL } from "../webgl";
 import { Renderer } from "./renderer/renderer";
 import { Scene } from "../scene/scene";
-import { SpecialFXPass } from "./renderer/pass";
+import { SpecialFX } from "./specialFx/specialFX";
 
 export class Graphics implements Layer
 {
@@ -14,11 +14,13 @@ export class Graphics implements Layer
     public Update(scene : Scene, elapsedTime : number, timeStep : number) : void 
     {
         scene.Render(elapsedTime, timeStep);
-                    
-        for(const pass of this.specialFx) 
+
+        if(!this.specialFx) 
         {
-            pass.Render(elapsedTime, timeStep);
+            this.specialFx = new SpecialFX(this.renderer, scene.writeTexture);
         }
+        
+        this.specialFx.Render();
     }
 
     public SetSizes(width: number, height: number) 
@@ -37,9 +39,9 @@ export class Graphics implements Layer
         this.gl.canvas.width = this.width;
         this.gl.canvas.height = this.height;
 
-        for(const pass of this.specialFx) 
+        if(this.specialFx) 
         {
-            pass.Resize(width, height)
+            this.specialFx.Resize(width, height);
         }
     }
 
@@ -47,7 +49,7 @@ export class Graphics implements Layer
     public GetRenderer() : Renderer { return this.renderer; }
 
 
-    public specialFx : Array<SpecialFXPass> = Array<SpecialFXPass>();
+    public specialFx !: SpecialFX;
     
     private renderer : Renderer = new Renderer();
     private gl : WebGL2RenderingContext;

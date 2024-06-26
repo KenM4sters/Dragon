@@ -17,7 +17,6 @@ export class Script extends DRAGON.IScript
     {
         super();
 
-        
         this.dragon.scene = new DRAGON.Scene(this.dragon.graphics);
 
         this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0)));
@@ -41,26 +40,6 @@ export class Script extends DRAGON.IScript
         this.dragon.graphics = new DRAGON.Graphics();
         this.dragon.graphics.SetSizes(window.innerWidth, window.innerHeight);
 
-
-        const hdrInfo : DRAGON.HDRPassCreateInfo = 
-        {
-            exposure: 1.0,
-            bloomStrength: 0.2,
-        };
-
-
-        const bloomInfo : DRAGON.BloomPassCreateInfo = 
-        {
-            levels: 1,
-            filterRadius: 0.001,
-            strength: 1.0,
-            threshold: 1.0
-        }
-    
-        const bloomStage = new DRAGON.BloomPass(this.dragon.graphics.GetRenderer(), [this.dragon.scene.renderTarget], bloomInfo);
-        const hdrStage = new DRAGON.HDRPass(this.dragon.graphics.GetRenderer(), [bloomStage.GetWriteTarget(), this.dragon.scene.renderTarget], hdrInfo);
-        this.dragon.graphics.specialFx.push(bloomStage);
-        this.dragon.graphics.specialFx.push(hdrStage);
         this.dragon.SetAnimationLoop(this.Loop);
     }
 

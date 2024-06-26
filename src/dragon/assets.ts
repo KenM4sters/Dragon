@@ -1,56 +1,22 @@
-import { Image } from "./graphics/image";
-import { Shader, Texture } from "./export";
 
 
 export class Assets 
 {
     private constructor() {}
 
-    public SaveAsset(name : string, asset : Texture | Image | Shader) : void 
+    public SaveAsset(name : string, asset : any) : void 
     {
-        if(asset instanceof Texture) 
+        if(asset instanceof WebGLTexture) 
         {
             this.textures.set(name, asset);
         }
-        else if(asset instanceof Image) 
-        {
-            this.images.set(name, asset);
-        }
-        else if(asset instanceof Shader) 
-        {
-            this.shaders.set(name, asset);
-        }
     }
 
-    public GetTexture(name : string) : Texture | null 
+    public GetTexture(name : string) : WebGLTexture | null 
     {
         const asset = this.textures.get(name);
         
-        if(asset instanceof Texture) 
-        {
-            return asset;
-        }
-    
-        return null;
-    }
-
-    public GetImage(name : string) : Image | null 
-    {
-        const asset = this.images.get(name);
-
-        if(asset instanceof Image) 
-        {
-            return asset;
-        }
-        
-        return null;
-    }
-
-    public GetShader(name : string) : Shader | null 
-    {
-        const asset = this.shaders.get(name);
-
-        if(asset instanceof Shader) 
+        if(asset instanceof WebGLTexture) 
         {
             return asset;
         }
@@ -69,9 +35,7 @@ export class Assets
         return Assets.instance;
     }
 
-    private textures : Map<string, Texture> = new Map<string, Texture>();
-    private images : Map<string, Image> = new Map<string, Image>();
-    private shaders : Map<string, Shader> = new Map<string, Shader>();
+    private textures : Map<string, WebGLTexture> = new Map<string, WebGLTexture>();
 
     private static instance : Assets;
 }

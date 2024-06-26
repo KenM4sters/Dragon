@@ -1,4 +1,4 @@
-import { RawTexture2D } from "./texture";
+import { RawTexture2D, RawTextureCreateInfo } from "./texture";
 import { Ref, WebGL } from "../webgl";
 
 
@@ -20,11 +20,6 @@ export interface RenderbufferCreateInfo
 export class Framebuffer 
 {
     constructor(createInfo : FramebufferCreateInfo) 
-    {
-        this.Create(createInfo);
-    }
-
-    public Create(createInfo : FramebufferCreateInfo) : void
     {
         this.gl = WebGL.GetInstance().gl;
 
@@ -91,7 +86,25 @@ export class Framebuffer
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
             this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
         }
-    };
+    }
+
+    public Resize(width : number, height : number) : void 
+    {
+        if(this.renderBufferInfo) 
+        {
+            this.renderBufferInfo.width = width;
+            this.renderBufferInfo.height = height;
+
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.renderbufferId.val);
+    
+            this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.renderBufferInfo.format, this.renderBufferInfo.width, this.renderBufferInfo.height);
+            this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.renderBufferInfo.attachmentType, this.gl.RENDERBUFFER, this.renderbufferId.val);
+            
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
+        }
+    }
 
     public SetColorAttachment(texture : RawTexture2D, attachmentUnit : number) 
     {
@@ -101,6 +114,12 @@ export class Framebuffer
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, unit, 
             texture.GetTextureInfo().dimension, 
             texture.GetId().val, 0); 
+    }
+
+    public DrawToAttachment(attachmentUnit : number[]) 
+    {
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
+        this.gl.drawBuffers(attachmentUnit);
     }
 
     public Destroy() : void 
@@ -117,12 +136,12 @@ export class Framebuffer
     public GetFramebufferId() : Ref<WebGLFramebuffer> { return this.framebufferId};
     public GetRenderbufferId() : Ref<WebGLRenderbuffer | null> { return this.renderbufferId;}
 
-    public framebufferInfo !: FramebufferCreateInfo;
+    public framebufferInfo : FramebufferCreateInfo;
     public renderBufferInfo : RenderbufferCreateInfo | null = null;
 
-    private framebufferId !: Ref<WebGLFramebuffer>;
-    private renderbufferId !: Ref<WebGLRenderbuffer | null>;
-    private gl !: WebGL2RenderingContext;
+    private framebufferId : Ref<WebGLFramebuffer>;
+    private renderbufferId : Ref<WebGLRenderbuffer | null>;
+    private gl : WebGL2RenderingContext;
 };
 
 
