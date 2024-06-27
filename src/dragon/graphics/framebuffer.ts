@@ -1,4 +1,4 @@
-import { RawTexture2D, RawTextureCreateInfo } from "./texture";
+import { RawCubeTexture, RawTexture2D, RawTextureCreateInfo } from "./texture";
 import { Ref, WebGL } from "../webgl";
 
 
@@ -100,20 +100,19 @@ export class Framebuffer
     
             this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.renderBufferInfo.format, this.renderBufferInfo.width, this.renderBufferInfo.height);
             this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.renderBufferInfo.attachmentType, this.gl.RENDERBUFFER, this.renderbufferId.val);
-            
-            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
         }
     }
 
-    public SetColorAttachment(texture : RawTexture2D, attachmentUnit : number) 
+    public SetColorAttachment(texture : RawTexture2D | RawCubeTexture, attachmentUnit : number) 
     {
         const unit = this.gl.COLOR_ATTACHMENT0 + attachmentUnit;
-        
+
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, unit, 
             texture.GetTextureInfo().dimension, 
             texture.GetId().val, 0); 
+
+        this.Resize(texture.GetTextureInfo().width, texture.GetTextureInfo().height);
     }
 
     public DrawToAttachment(attachmentUnit : number[]) 

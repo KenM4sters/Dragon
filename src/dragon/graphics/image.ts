@@ -59,7 +59,7 @@ export class HDRImage extends Image
 
         this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
 
-        this.gl.texImage2D(createInfo.dimension, 0, createInfo.format, createInfo.threeData.width, createInfo.threeData.height, 0, createInfo.nChannels, createInfo.type, createInfo.threeData.data);
+        this.gl.texImage2D(createInfo.dimension, 0, createInfo.format, createInfo.threeData.width, createInfo.threeData.height, 0, createInfo.nChannels, createInfo.type, new Float32Array(createInfo.threeData.data));
         
         this.gl.bindTexture(createInfo.dimension, null);
     }

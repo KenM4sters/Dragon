@@ -1,41 +1,72 @@
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { TextureImageData } from 'three/src/textures/types.js';
 
-
-export class Assets 
+export default class Assets 
 {
-    private constructor() {}
-
-    public SaveAsset(name : string, asset : any) : void 
+    private constructor() 
     {
-        if(asset instanceof WebGLTexture) 
+    }
+
+    public LoadAllAssets(callback: () => void) : void 
+    {
+        const loader = new RGBELoader();
+        for(const r of sources) 
         {
-            this.textures.set(name, asset);
+            if(r.type == "LDR") 
+            {
+                const IMG = new Image();
+                IMG.src = r.path;  
+                IMG.style.transform = `'rotateY(180deg)'`;
+                
+                IMG.addEventListener("load", () => {
+                    this.textures.set(r.name, IMG);
+                    this.UpdateStatus(callback);
+                })
+            } else if(r.type == "HDR") 
+            {   
+                loader.load(r.path, (tex) => 
+                {                                                                                 
+                    this.textures.set(r.name, tex.image);                    
+                    this.UpdateStatus(callback);
+                })
+            }
         }
     }
 
-    public GetTexture(name : string) : WebGLTexture | null 
+    private UpdateStatus(callback: () => void) : void 
     {
-        const asset = this.textures.get(name);
-        
-        if(asset instanceof WebGLTexture) 
+        this.status += 1;
+        if(this.status == sources.length) 
         {
-            return asset;
+            callback();
         }
-    
-        return null;
     }
 
-    // Public static method to get the instance of the class
+    public GetTexture(name : string) : HTMLImageElement | TextureImageData | undefined 
+    {         
+        return this.textures.get(name); 
+    }
+
     public static GetInstance() : Assets 
     {
-        if(!Assets.instance) 
+        if(!this.instance) 
         {
-            Assets.instance = new Assets();
+            this.instance = new Assets();
         }
 
-        return Assets.instance;
+        return this.instance;
     }
 
-    private textures : Map<string, WebGLTexture> = new Map<string, WebGLTexture>();
-
     private static instance : Assets;
+    private textures : Map<string, HTMLImageElement | TextureImageData> = new Map<string, HTMLImageElement | TextureImageData>();
+    private status : number = 0;
 }
+
+const sources : {name: string, type: string, path: string}[] = 
+[
+    {
+        name: "ocean",
+        type: "HDR",
+        path: "./ocean.hdr"
+    },
+]

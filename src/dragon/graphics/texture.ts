@@ -19,6 +19,7 @@ export interface SamplerCreateInfo
     magFilter : number;
     sWrap : number;
     tWrap : number;
+    rWrap ?: number;
 };
 
 export abstract class Texture 
@@ -58,8 +59,8 @@ export class RawTexture2D extends Texture
 
         this.gl.bindTexture(createInfo.samplerInfo.dimension, this.id.val);
 
-        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MIN_FILTER, createInfo.samplerInfo.magFilter);
-        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MAG_FILTER, createInfo.samplerInfo.minFilter);
+        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MIN_FILTER, createInfo.samplerInfo.minFilter);
+        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MAG_FILTER, createInfo.samplerInfo.magFilter);
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_S, createInfo.samplerInfo.sWrap);
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_T, createInfo.samplerInfo.tWrap);
 
@@ -105,16 +106,26 @@ export class RawCubeTexture extends Texture
 
         this.gl.bindTexture(createInfo.samplerInfo.dimension, this.id.val);
 
-        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MIN_FILTER, createInfo.samplerInfo.magFilter);
-        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MAG_FILTER, createInfo.samplerInfo.minFilter);
+        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MIN_FILTER, createInfo.samplerInfo.minFilter);
+        this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_MAG_FILTER, createInfo.samplerInfo.magFilter);
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_S, createInfo.samplerInfo.sWrap);
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_T, createInfo.samplerInfo.tWrap);
+        if(createInfo.samplerInfo.rWrap) 
+        {
+            this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_R, createInfo.samplerInfo.rWrap);
+        }
 
         this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
         
         for(let i = 0; i < 6; i++) 
         {
             this.gl.texImage2D(this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, createInfo.format, createInfo.width, createInfo.height, 0, createInfo.nChannels, createInfo.type, createInfo.data);
+
+            // Check for texture errors
+            if (this.gl.getError() !== this.gl.NO_ERROR) 
+            {
+                console.error("Error with texture binding or creation");
+            }
         }
         
         this.gl.bindTexture(createInfo.dimension, null);

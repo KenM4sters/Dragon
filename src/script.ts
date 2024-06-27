@@ -17,21 +17,26 @@ export class Script extends DRAGON.IScript
     {
         super();
 
-        this.dragon.scene = new DRAGON.Scene(this.dragon.graphics);
+        this.dragon = new DRAGON.Dragon(this);
+    }
 
-        this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 5.0)));
+    public override Initialize() : void 
+    {
+        this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 8.0)));
+
+        this.dragon.scene.AddBackground("ocean");
 
         let mat = new DRAGON.PhysicalMaterial();
         mat.ao = 2.0;
         mat.roughenss = 0.3;
         mat.metallic = 0.7;
-
         let geo = new DRAGON.BoxGeometry();
-        let cube = new DRAGON.Mesh(geo, mat);
 
-        cube.SetUpdateCallback(Update);
+        let cube1 = new DRAGON.Mesh(geo, mat);
 
-        this.dragon.scene.Add(cube);
+        cube1.SetUpdateCallback(Update);
+
+        this.dragon.scene.Add(cube1);
 
         const pointLight = new DRAGON.PointLight([-5.0, 5.0, 2.0], [1.0, 1.0, 1.0], 100.0);
         
@@ -47,5 +52,7 @@ export class Script extends DRAGON.IScript
     {   
         this.dragon.Update();
     }
+
+    private dragon : DRAGON.Dragon;
     
 };

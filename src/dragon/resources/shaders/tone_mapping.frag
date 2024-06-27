@@ -18,12 +18,33 @@ vec3 ACESFilm(vec3 x)
     return clamp((x*(A*x+B))/(x*(C*x+D)+E), 0.0, 1.0);
 }
 
+vec3 Uncharted2(vec3 color) 
+{
+  float A = 0.15;
+  float B = 0.50;
+  float C = 0.10;
+  float D = 0.20;
+  float E = 0.02;
+  float F = 0.30;
 
-void main() {
+  float W = 11.2;
+  vec3 numerator = ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
+  float whiteScale = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
 
+  return numerator / whiteScale;
+}
+
+vec3 Reinhard(vec3 color) 
+{
+  return color / (color + vec3(50000));
+}
+
+
+void main() 
+{
     vec3 finalHDR = texture(hdrTex, vUV).rgb * exposure;
 
-    vec3 tone_mapped = ACESFilm(finalHDR);
+    vec3 tone_mapped = Uncharted2(finalHDR);
 
-    FragColor = vec4(tone_mapped, 1.0);
+    FragColor = vec4(finalHDR, 1.0);
 }

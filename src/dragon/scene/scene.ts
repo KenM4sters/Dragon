@@ -1,13 +1,18 @@
-import { Graphics, RawTexture2D, RawTextureCreateInfo } from "../export";
+import Assets from "../assets";
+import { Graphics, RawCubeTexture, RawTexture2D, RawTextureCreateInfo } from "../export";
 import { Framebuffer, FramebufferCreateInfo } from "../graphics/framebuffer";
+import { HDRImage, HDRImageCreateInfo } from "../graphics/image";
 import { Renderer } from "../graphics/renderer/renderer";
 import { RenderTarget, RenderTargetCreateInfo } from "../graphics/renderer/target";
 import { WebGL } from "../webgl";
 import { PerspectiveCamera } from "./camera";
 import { BoxGeometry } from "./geometry";
 import { Light } from "./light";
-import { PhysicalMaterial } from "./material";
+import { PhysicalMaterial, SkyboxMaterial } from "./material";
 import { Mesh } from "./mesh";
+import { Skybox } from "./skybox";
+
+import { TextureImageData } from 'three/src/textures/types.js';
 
 
 export class Scene
@@ -83,6 +88,32 @@ export class Scene
         }
     }
 
+    public AddBackground(assetName : string) : void 
+    {
+        const assets = Assets.GetInstance();
+        
+        const asset = assets.GetTexture(assetName) as TextureImageData;
+
+        const hdrImageInfo : HDRImageCreateInfo = 
+        {
+            dimension: this.gl.TEXTURE_2D,
+            type: this.gl.FLOAT,
+            format: this.gl.RGBA32F,
+            nChannels: this.gl.RGBA,
+            threeData: asset,
+            samplerInfo: 
+            {
+                dimension: this.gl.TEXTURE_2D,
+                minFilter: this.gl.LINEAR,
+                magFilter: this.gl.LINEAR,
+                sWrap: this.gl.CLAMP_TO_EDGE,
+                tWrap: this.gl.CLAMP_TO_EDGE
+            }
+        }        
+    
+        this.skybox = new Skybox(this, hdrImageInfo);
+    }
+
     public SetCamera(camera : PerspectiveCamera) : void 
     {
         const canvas = WebGL.GetInstance().canvas;
@@ -98,9 +129,25 @@ export class Scene
     public Render(elapsedTime: number, timeStep: number): void 
     {
         this.camera.UpdateViewMatrix();
-
+        
+        this.renderTarget.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
         this.renderer.SetRenderTarget(this.renderTarget);
         this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
+        this.renderTarget.writeBuffer?.SetColorAttachment(this.writeTexture, 0);
+        
+        if(this.skybox) 
+        {
+            this.skybox.GetCube().UpdateUniforms(this.camera, []);
+
+            const geo = this.skybox.GetCube().geometry;
+            const mat = this.skybox.GetCube().material;
+
+            if(geo instanceof BoxGeometry && mat instanceof SkyboxMaterial) 
+            {                                         
+                this.renderer.Draw(geo.GetVertexArray(), mat.GetShader(), 36);
+            }
+        } 
+        
 
         const children = this.GetAllChildren();
     
@@ -157,13 +204,14 @@ export class Scene
         this.renderTarget.Resize(width, height, sceneStageInfo);
     }
     
+    public renderer : Renderer;
     public renderTarget : RenderTarget;
     public writeTexture : RawTexture2D;
     
     private meshes : Array<Mesh> = new Array<Mesh>();
     private lights : Array<Light> = new Array<Light>()
     private camera : PerspectiveCamera;
+    private skybox : Skybox | null = null;
 
-    private renderer : Renderer;
     private gl : WebGL2RenderingContext;
 }; 

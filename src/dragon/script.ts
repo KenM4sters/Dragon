@@ -8,7 +8,7 @@ export abstract class IScript
         this.Loop = this.Loop.bind(this); 
     }
 
-    protected abstract Loop(elapsedTime : number, timeStep : number) : void;
-    
-    protected dragon : Dragon = new Dragon();
+    public abstract Initialize() : void;
+    public abstract Loop(elapsedTime : number, timeStep : number) : void;
+
 };

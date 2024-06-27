@@ -28,7 +28,7 @@ export class ToneMappingPass extends SpecialFXPass
         const target = this.specialFx.target;
         target.writeBuffer = null;
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height}
-
+        
         this.renderer.SetRenderTarget(target);
 
         this.gl.useProgram(this.screenQuad.GetShader().GetId().val);

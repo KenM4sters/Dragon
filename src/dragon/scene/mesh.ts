@@ -1,7 +1,7 @@
 import * as glm from "gl-matrix";
 
 import { Geometry } from "./geometry";
-import { Material, PhysicalMaterial } from "./material";
+import { Material, PhysicalMaterial, SkyboxMaterial } from "./material";
 import { PerspectiveCamera } from "./camera";
 import { Light, PointLight } from "./light";
 import { WebGL } from "../webgl";
@@ -80,6 +80,19 @@ export class Mesh
                     gl.useProgram(null);
                 }
             }
+        }
+        else if(this.material instanceof SkyboxMaterial) 
+        {
+            const material = this.material;
+            const shader = material.GetShader(); 
+
+            gl.useProgram(shader.GetId().val);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, camera.GetProjectionMatrix());
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, camera.GetViewMatrix());
+
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, material.cubeTexture.GetId().val);
+            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "environmentMap"), 0);
         }
     }  
 

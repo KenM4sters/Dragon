@@ -11,7 +11,7 @@ export class Shader
     // Getters 
     GetId() : Ref<WebGLProgram> { return this.ID; }
 
-    private Compile(vSource : string, fSource : string) : void 
+    public Compile(vSource : string, fSource : string) : void 
     {   
         if(!vSource || !fSource)
             throw new Error("Failed to get Shader source code from scriptId!");

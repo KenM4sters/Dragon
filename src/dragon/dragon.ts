@@ -1,14 +1,20 @@
+import Assets from "./assets";
 import { Graphics } from "./graphics/graphics";
 import { Scene } from "./scene/scene";
+import { IScript } from "./script";
 import { WebGL } from "./webgl";
 
 
 export class Dragon 
 {
-    constructor() 
+    constructor(script : IScript) 
     {
+        this.script = script;
         this.graphics = new Graphics();
-        this.scene = new Scene(this.graphics);
+        this.assets = Assets.GetInstance();
+        this.scene = new Scene(this.graphics); 
+
+        this.assets.LoadAllAssets(() => script.Initialize());
 
         window.addEventListener("resize", () => this.OnResize());
     }
@@ -64,8 +70,11 @@ export class Dragon
 
         this.animationCallback = undefined; 
     }
+
     
+    public script : IScript;
     public graphics : Graphics;
+    public assets : Assets;
     public scene : Scene;
 
     private animationCallback !: ((elapsedTime :number, timeStep : number) => void) | undefined;

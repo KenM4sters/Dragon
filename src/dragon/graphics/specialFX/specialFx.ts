@@ -8,8 +8,8 @@ import { BlurPass, BlurPassCreateInfo } from "./blur";
 import { SpecialFXPass } from "./pass";
 import { ToneMappingPass, ToneMappingPassCreateInfo } from "./toneMapping";
 
-let read : any;
-let write : any;
+let read : RawTexture2D;
+let write : RawTexture2D;
 
 export class SpecialFX implements Layer
 {
@@ -75,7 +75,7 @@ export class SpecialFX implements Layer
             strength: 0.5,
         }
     
-        this.passes.push(new BloomPass(this, bloomInfo));
+        // this.passes.push(new BloomPass(this, bloomInfo));
         this.passes.push(new ToneMappingPass(this, hdrInfo));
     }
 
@@ -140,6 +140,30 @@ export class SpecialFX implements Layer
         };
         
         this.target.Resize(width, height, targetInfo);
+
+        const writeTextureInfo : RawTextureCreateInfo = 
+        {
+            dimension: this.gl.TEXTURE_2D,
+            format: this.gl.RGBA32F,
+            width: width,
+            height: height,
+            nChannels: this.gl.RGBA,
+            type: this.gl.FLOAT,
+            data: null,
+            samplerInfo: 
+            {      
+                dimension: this.gl.TEXTURE_2D,      
+                minFilter: this.gl.LINEAR,
+                magFilter: this.gl.LINEAR,
+                sWrap: this.gl.REPEAT,
+                tWrap: this.gl.REPEAT,
+            }
+        }
+
+        this.ping.Resize(writeTextureInfo);
+        this.pong.Resize(writeTextureInfo);
+        read = this.ping;
+        write = this.pong;
 
         for(const pass of this.passes) 
         {
