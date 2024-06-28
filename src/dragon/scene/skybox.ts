@@ -158,12 +158,22 @@ export class Skybox
             if(target.writeBuffer) 
             {                
                 target.writeBuffer.SetColorAttachment(this.cubeMap, 0);
+
+                if (this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) != this.gl.FRAMEBUFFER_COMPLETE) 
+                {
+                    console.error('Framebuffer not complete');
+                }
             }
             
             this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.eqToCubShader.GetId().val, "view"), false, captureViews[i]);
 
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
             this.scene.renderer.Draw(geo.GetVertexArray(), this.eqToCubShader, 36);
         } 
+
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
     }
 
     public GetHDRImage() : HDRImage { return this.hdrImage; }

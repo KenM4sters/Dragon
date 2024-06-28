@@ -22,7 +22,7 @@ export class Script extends DRAGON.IScript
 
     public override Initialize() : void 
     {
-        this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 8.0)));
+        this.dragon.scene.SetCamera(new DRAGON.PerspectiveCamera(glm.vec3.fromValues(0.0, 0.0, 12.0)));
 
         this.dragon.scene.AddBackground("ocean");
 

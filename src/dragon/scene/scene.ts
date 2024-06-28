@@ -134,7 +134,7 @@ export class Scene
         this.renderer.SetRenderTarget(this.renderTarget);
         this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
         this.renderTarget.writeBuffer?.SetColorAttachment(this.writeTexture, 0);
-        
+
         if(this.skybox) 
         {
             this.skybox.GetCube().UpdateUniforms(this.camera, []);

@@ -122,7 +122,7 @@ export class RawCubeTexture extends Texture
             this.gl.texImage2D(this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, createInfo.format, createInfo.width, createInfo.height, 0, createInfo.nChannels, createInfo.type, createInfo.data);
 
             // Check for texture errors
-            if (this.gl.getError() !== this.gl.NO_ERROR) 
+            if(this.gl.getError() !== this.gl.NO_ERROR) 
             {
                 console.error("Error with texture binding or creation");
             }

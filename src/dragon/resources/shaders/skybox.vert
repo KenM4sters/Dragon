@@ -18,7 +18,7 @@ void main()
     vUV = aUV;
 
     mat4 rotView = mat4(mat3(view)); // remove translation from the view matrix
-    vec4 clipPos = projection * view * vec4(vLocalPos, 1.0);
+    vec4 clipPos = projection * rotView * vec4(vLocalPos, 1.0);
 
     gl_Position = clipPos.xyww;
 }
