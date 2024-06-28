@@ -5,8 +5,16 @@ import { IScript } from "./script";
 import { WebGL } from "./webgl";
 
 
+/**
+ * @brief The main entry point for our application. A Dragon instances of the scene, graphics, 
+ * script and assets and runs the game loop.
+ */
 export class Dragon 
 {
+    /**
+     * @brief Constructs all necessary members (scene, graphics etc...)
+     * @param script The scripts that defines an initiaztion and loop function to call.
+     */
     constructor(script : IScript) 
     {
         this.script = script;
@@ -19,6 +27,11 @@ export class Dragon
         window.addEventListener("resize", () => this.OnResize());
     }
 
+    /**
+     * @brief This needs to be called by the initialization function of the IScript instance
+     * which gives a callback to the function that will be called each frame.
+     * @param callback The loop function to be called each frame.
+     */
     public SetAnimationLoop(callback: (elapsedTime: number, timeStep: number) => void): void 
     {
         this.animationCallback = callback;
@@ -39,6 +52,9 @@ export class Dragon
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
     }
 
+    /**
+     * @brief Updates the graphics member instance.
+     */
     public Update() : void 
     {
         if(this.graphics != undefined) 
@@ -47,6 +63,9 @@ export class Dragon
         }
     }
 
+    /**
+     * @brief Resizes each member instance whenver the window is resized.
+     */
     public OnResize(): void 
     {
         let newWidth = window.innerWidth;

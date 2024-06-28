@@ -16,7 +16,8 @@ export class Ref<T> {
 
 
 /**
- * @brief Singleton class to act as our entry point.
+ * @brief Singleton class that merely provies easier access to the canvas and WebGl context
+ * instances that are needed throughout the application. 
  */
 export class WebGL 
 {
@@ -26,7 +27,7 @@ export class WebGL
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         
-        this.gl = this.canvas.getContext('webgl2', { antialias: true }) as WebGL2RenderingContext;
+        this.gl = this.canvas.getContext('webgl2') as WebGL2RenderingContext;
         if (!this.gl) throw new Error("webgl context is not available!");
 
         var ext1 = this.gl.getExtension('EXT_color_buffer_float');

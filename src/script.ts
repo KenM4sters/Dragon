@@ -27,9 +27,10 @@ export class Script extends DRAGON.IScript
         this.dragon.scene.AddBackground("ocean");
 
         let mat = new DRAGON.PhysicalMaterial();
+        mat.albedo = [1.0, 1.0, 1.0];
         mat.ao = 2.0;
-        mat.roughenss = 0.3;
-        mat.metallic = 0.7;
+        mat.roughenss = 0.0;
+        mat.metallic = 1.0;
         let geo = new DRAGON.BoxGeometry();
 
         let cube1 = new DRAGON.Mesh(geo, mat);
@@ -38,7 +39,7 @@ export class Script extends DRAGON.IScript
 
         this.dragon.scene.Add(cube1);
 
-        const pointLight = new DRAGON.PointLight([-5.0, 5.0, 2.0], [1.0, 1.0, 1.0], 100.0);
+        const pointLight = new DRAGON.PointLight([-5.0, 5.0, 2.0], [1.0, 1.0, 1.0], 10.0);
         
         this.dragon.scene.Add(pointLight);
         

@@ -1,6 +1,10 @@
 import { BufferAttribLayout, BufferAttribute, Shader, VertexArray, VertexBuffer } from "./export";
 
 
+/**
+ * @brief Very simple wrapper around some common vertices (square, cube etc) used by the 
+ * geometry classes.
+ */
 export namespace Primitives 
 {
     export class Square 

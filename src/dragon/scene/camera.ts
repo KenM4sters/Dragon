@@ -1,12 +1,20 @@
 import * as glm from "gl-matrix";
 
+
+/**
+ * @brief Holds and updates the View and Projection matrices used to transform each 
+ * object in the Scene instance relative to this camera object.
+ */
 export class PerspectiveCamera 
 {
     constructor(pos : glm.vec3) 
     {
         this.position = pos;
     }
-        
+    
+    /**
+     * @brief Updates the view matrix based on the right and up vectors.
+     */
     public UpdateViewMatrix() : void 
     {
         this.right = glm.vec3.normalize(glm.vec3.create(), glm.vec3.cross( glm.vec3.create(), this.front, this.up)); 
@@ -14,6 +22,11 @@ export class PerspectiveCamera
         this.viewMatrix = glm.mat4.lookAt(this.viewMatrix, this.position, glm.vec3.add(glm.vec3.create(), this.position, this.front), this.up);
     }
     
+    /**
+     * Updates the projection matrix to a new dimension.
+     * @param width new Width.
+     * @param height new Height.
+     */
     public UpdateProjectionMatrix(width: number, height: number) : void 
     {                  
         this.width = width;            

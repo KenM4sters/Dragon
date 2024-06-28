@@ -103,14 +103,14 @@ export class Framebuffer
         }
     }
 
-    public SetColorAttachment(texture : RawTexture2D | RawCubeTexture, attachmentUnit : number) 
+    public SetColorAttachment(texture : RawTexture2D | RawCubeTexture, attachmentUnit : number, level : number = 0) 
     {
         const unit = this.gl.COLOR_ATTACHMENT0 + attachmentUnit;
 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, unit, 
             texture.GetTextureInfo().dimension, 
-            texture.GetId().val, 0); 
+            texture.GetId().val, level); 
 
         this.Resize(texture.GetTextureInfo().width, texture.GetTextureInfo().height);
     }

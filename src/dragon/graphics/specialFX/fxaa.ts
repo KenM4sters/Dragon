@@ -5,16 +5,16 @@ import { RenderTargetCreateInfo } from "../renderer/target";
 import { SpecialFX } from "./specialFX";
 
 import vertSrc from "../../resources/shaders/screen_quad.vert?raw"
-import fragSrc from "../../resources/shaders/tone_mapping.frag?raw"
+import fragSrc from "../../resources/shaders/fxaa.frag?raw"
 
-export interface ToneMappingPassCreateInfo 
+export interface FXAAPassCreateInfo 
 {
-    exposure : number;
+    screenResolution : {width: number, height: number};
 };
 
-export class ToneMappingPass extends SpecialFXPass 
+export class FXAAPass extends SpecialFXPass 
 {
-    constructor(specialFx : SpecialFX, createInfo : ToneMappingPassCreateInfo)  
+    constructor(specialFx : SpecialFX, createInfo : FXAAPassCreateInfo)  
     {
         super(specialFx.renderer, SpecialFXPassTypes.ToneMapping, []);
         this.specialFx = specialFx;
@@ -26,14 +26,10 @@ export class ToneMappingPass extends SpecialFXPass
     public Render(read: RawTexture2D, write: RawTexture2D): void 
     {
         const target = this.specialFx.target;
-        target.writeBuffer = this.specialFx.target.writeBuffer;
+        target.writeBuffer = null;
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height}
         
         this.renderer.SetRenderTarget(target);
-
-        target.writeBuffer?.SetColorAttachment(write, 0);
-
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
         this.gl.useProgram(this.screenQuad.GetShader().GetId().val);
 
@@ -41,8 +37,8 @@ export class ToneMappingPass extends SpecialFXPass
 
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(texInfo.dimension, read.GetId().val);
-        this.gl.uniform1i(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "hdrTex"), 0);
-        this.gl.uniform1f(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "exposure"), this.toneMappingInfo.exposure);
+        this.gl.uniform1i(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "uToneMappedTexture"), 0);
+        this.gl.uniform2fv(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "uResolution"), [this.toneMappingInfo.screenResolution.width, this.toneMappingInfo.screenResolution.height]);
 
         this.renderer.Draw(this.screenQuad.GetVertexArray(), this.screenQuad.GetShader(), 6);
 
@@ -54,5 +50,5 @@ export class ToneMappingPass extends SpecialFXPass
     }
 
     private specialFx : SpecialFX;
-    private toneMappingInfo : ToneMappingPassCreateInfo;
+    private toneMappingInfo : FXAAPassCreateInfo;
 }

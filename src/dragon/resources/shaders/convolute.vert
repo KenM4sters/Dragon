@@ -1,14 +1,16 @@
 #version 300 es
 
-layout (location = 0) in vec3 aPos;
+in vec3 aPosition;
+in vec3 aNormal;
+in vec2 aUV;
 
-out vec3 WorldPos;
+out vec3 vWorldPos;
 
 uniform mat4 projection;
 uniform mat4 view;
 
 void main()
 {
-    WorldPos = aPos;  
-    gl_Position =  projection * view * vec4(WorldPos, 1.0);
+    vWorldPos = aPosition;  
+    gl_Position =  projection * view * vec4(vWorldPos, 1.0);
 }

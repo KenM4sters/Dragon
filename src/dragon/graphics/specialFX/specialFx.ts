@@ -5,7 +5,9 @@ import { RenderTarget, RenderTargetCreateInfo } from "../renderer/target";
 import { RawTexture2D, RawTextureCreateInfo } from "../texture";
 import { BloomPass, BloomPassCreateInfo } from "./bloom";
 import { BlurPass, BlurPassCreateInfo } from "./blur";
+import { FXAAPass, FXAAPassCreateInfo } from "./fxaa";
 import { SpecialFXPass } from "./pass";
+import { SSAAPass, SSAAPassCreateInfo } from "./ssaa";
 import { ToneMappingPass, ToneMappingPassCreateInfo } from "./toneMapping";
 
 let read : RawTexture2D;
@@ -70,13 +72,25 @@ export class SpecialFX implements Layer
 
         const bloomInfo : BloomPassCreateInfo = 
         {
-            levels: 1,
+            levels: 2,
             filterRadius: 0.001,
-            strength: 0.5,
-        }
+            strength: 0.3,
+        };
+
+        const fxaaInfo : FXAAPassCreateInfo = 
+        {
+            screenResolution: {width: canvas.width, height: canvas.height}
+        };
+
+        const ssaaInfo : SSAAPassCreateInfo = 
+        {
+            screenResMultiplier: 8
+        };
     
         // this.passes.push(new BloomPass(this, bloomInfo));
         this.passes.push(new ToneMappingPass(this, hdrInfo));
+        // this.passes.push(new SSAAPass(this, ssaaInfo));
+        this.passes.push(new FXAAPass(this, fxaaInfo));
     }
 
     public Render() : void 

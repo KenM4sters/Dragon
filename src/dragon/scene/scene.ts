@@ -6,15 +6,16 @@ import { Renderer } from "../graphics/renderer/renderer";
 import { RenderTarget, RenderTargetCreateInfo } from "../graphics/renderer/target";
 import { WebGL } from "../webgl";
 import { PerspectiveCamera } from "./camera";
-import { BoxGeometry } from "./geometry";
+import { BoxGeometry, SphereGeometry } from "./geometry";
 import { Light } from "./light";
 import { PhysicalMaterial, SkyboxMaterial } from "./material";
 import { Mesh } from "./mesh";
 import { Skybox } from "./skybox";
-
 import { TextureImageData } from 'three/src/textures/types.js';
 
-
+/**
+ * @brief Holds containers for the meshes, lights and a skybox and handles the rendering of them.
+ */
 export class Scene
 {
     constructor(graphics : Graphics) 
@@ -88,6 +89,10 @@ export class Scene
         }
     }
 
+    /**
+     * @brief Sets a skybox with the desired texture.
+     * @param assetName Name of the asset held by the Assets instance.
+     */
     public AddBackground(assetName : string) : void 
     {
         const assets = Assets.GetInstance();
@@ -114,6 +119,10 @@ export class Scene
         this.skybox = new Skybox(this, hdrImageInfo);
     }
 
+    /**
+     * @brief Sets the camera instance.
+     * @param camera Currently only supporting a PerspectiveCamera instance.
+     */
     public SetCamera(camera : PerspectiveCamera) : void 
     {
         const canvas = WebGL.GetInstance().canvas;
@@ -126,6 +135,10 @@ export class Scene
         return {meshes: this.meshes, lights: this.lights};
     }
 
+    /**
+     * @brief Scene-specific render function to take some load of the Graphics instance.
+     * Renders all meshes and skyboxes.
+     */
     public Render(elapsedTime: number, timeStep: number): void 
     {
         this.camera.UpdateViewMatrix();
@@ -137,13 +150,13 @@ export class Scene
 
         if(this.skybox) 
         {
-            this.skybox.GetCube().UpdateUniforms(this.camera, []);
-
+            this.skybox.GetCube().UpdateUniforms(this);
+            
             const geo = this.skybox.GetCube().geometry;
             const mat = this.skybox.GetCube().material;
 
             if(geo instanceof BoxGeometry && mat instanceof SkyboxMaterial) 
-            {                                         
+            {            
                 this.renderer.Draw(geo.GetVertexArray(), mat.GetShader(), 36);
             }
         } 
@@ -153,16 +166,23 @@ export class Scene
     
         for(const mesh of children.meshes)  
         {   
-            mesh.UpdateUniforms(this.camera, children.lights);
+            mesh.UpdateUniforms(this);
 
             if(mesh.userUpdateCallback) 
             {
                 mesh.userUpdateCallback(mesh, elapsedTime, timeStep);
             } 
 
-            if(mesh.geometry instanceof BoxGeometry && mesh.material instanceof PhysicalMaterial) 
-            {             
-                this.renderer.Draw(mesh.geometry.GetVertexArray(), mesh.material.GetShader(), 36);
+            if(mesh.material instanceof PhysicalMaterial) 
+            {      
+                if(mesh.geometry instanceof BoxGeometry) 
+                {
+                    this.renderer.Draw(mesh.geometry.GetVertexArray(), mesh.material.GetShader(), 36);
+                }  
+                else if(mesh.geometry instanceof SphereGeometry) 
+                {
+                    this.renderer.Draw(mesh.geometry.GetVertexArray(), mesh.material.GetShader(), mesh.geometry.verticesCount);
+                }     
             }
         } 
 
@@ -207,11 +227,11 @@ export class Scene
     public renderer : Renderer;
     public renderTarget : RenderTarget;
     public writeTexture : RawTexture2D;
-    
-    private meshes : Array<Mesh> = new Array<Mesh>();
-    private lights : Array<Light> = new Array<Light>()
-    private camera : PerspectiveCamera;
-    private skybox : Skybox | null = null;
+    public lights : Array<Light> = new Array<Light>()
+    public camera : PerspectiveCamera;
+    public skybox : Skybox | null = null;
+    public gl : WebGL2RenderingContext;
 
-    private gl : WebGL2RenderingContext;
+    private meshes : Array<Mesh> = new Array<Mesh>();
+
 }; 

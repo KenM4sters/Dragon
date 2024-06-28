@@ -1,5 +1,5 @@
 import * as glm from "gl-matrix";
-import { BoxGeometry, Mesh, RawCubeTexture, RawTexture2D, RawTextureCreateInfo, Scene, Shader, SkyboxMaterial, Texture } from "../export";
+import { BoxGeometry, Mesh, Primitives, RawCubeTexture, RawTexture2D, RawTextureCreateInfo, Scene, Shader, SkyboxMaterial, Texture } from "../export";
 import { HDRImage, HDRImageCreateInfo } from "../graphics/image";
 import { WebGL } from "../webgl";
 
@@ -77,7 +77,7 @@ export class Skybox
             samplerInfo: 
             {      
                 dimension: this.gl.TEXTURE_CUBE_MAP,      
-                minFilter: this.gl.LINEAR,
+                minFilter: this.gl.LINEAR_MIPMAP_LINEAR,
                 magFilter: this.gl.LINEAR,
                 sWrap: this.gl.CLAMP_TO_EDGE,
                 tWrap: this.gl.CLAMP_TO_EDGE,
@@ -88,10 +88,10 @@ export class Skybox
         const brdfInfo : RawTextureCreateInfo = 
         {
             dimension: this.gl.TEXTURE_2D,
-            format: this.gl.RGBA32F,
+            format: this.gl.RG16F,
             width: 512,
             height: 512,
-            nChannels: this.gl.RGBA,
+            nChannels: this.gl.RG,
             type: this.gl.FLOAT,
             data: null,
             samplerInfo: 
@@ -101,7 +101,6 @@ export class Skybox
                 magFilter: this.gl.LINEAR,
                 sWrap: this.gl.CLAMP_TO_EDGE,
                 tWrap: this.gl.CLAMP_TO_EDGE,
-                rWrap: this.gl.CLAMP_TO_EDGE,
             }
         };
 
@@ -116,10 +115,11 @@ export class Skybox
         const geo = new BoxGeometry();
         this.cube = new Mesh(geo, mat);
 
-        this.GenerateCubeMap();
+        this.GenerateIrradianceMaps();
+        this.GenreateBRDF();
     }       
 
-    private GenerateCubeMap() : void 
+    private GenerateIrradianceMaps() : void 
     {        
         let captureProjection = glm.mat4.perspective(glm.mat4.create(), glm.glMatrix.toRadian(90.0), 1, 0.1, 10);
         let captureViews = [
@@ -137,8 +137,11 @@ export class Skybox
             glm.mat4.lookAt(glm.mat4.create(), glm.vec3.fromValues(0.0, 0.0, 0.0), glm.vec3.fromValues( 0.0,  0.0, -1.0), glm.vec3.fromValues(0.0, -1.0,  0.0)),
         ];
 
+
+        // Cube map
+        //
         const target = this.scene.renderTarget;
-        const texInfo = this.cubeMap.GetTextureInfo();
+        let texInfo = this.cubeMap.GetTextureInfo();
         target.viewport = {width: texInfo.width, height: texInfo.height};
         this.scene.renderer.SetRenderTarget(this.scene.renderTarget);
 
@@ -174,6 +177,137 @@ export class Skybox
 
         target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
+
+
+        // Convolution
+        //
+        texInfo = this.convolutedMap.GetTextureInfo();
+        target.viewport = {width: texInfo.width, height: texInfo.height};
+        this.scene.renderer.SetRenderTarget(this.scene.renderTarget);
+
+        this.gl.useProgram(this.convoluteShader.GetId().val);
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.cubeMap.GetId().val);
+        this.gl.uniform1i(this.gl.getUniformLocation(this.convoluteShader.GetId().val, "environmetMap"), 0);
+
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.convoluteShader.GetId().val, "projection"), false, captureProjection);
+
+        for(let i = 0; i < 6; i++) 
+        {            
+            texInfo.dimension = this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i;
+
+            if(target.writeBuffer) 
+            {                
+                target.writeBuffer.SetColorAttachment(this.convolutedMap, 0);
+
+                if (this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) != this.gl.FRAMEBUFFER_COMPLETE) 
+                {
+                    console.error('Framebuffer not complete');
+                }
+            }
+            
+            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.convoluteShader.GetId().val, "view"), false, captureViews[i]);
+
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+            this.scene.renderer.Draw(geo.GetVertexArray(), this.convoluteShader, 36);
+        } 
+
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
+
+
+        // Prefilter
+        //
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.prefilteredMap.GetId().val);
+        this.gl.generateMipmap(this.gl.TEXTURE_CUBE_MAP);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
+
+        this.gl.useProgram(this.prefilterShader.GetId().val);
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.cubeMap.GetId().val);
+        this.gl.uniform1i(this.gl.getUniformLocation(this.prefilterShader.GetId().val, "environmetMap"), 0);
+
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.prefilterShader.GetId().val, "projection"), false, captureProjection);
+        let maxMipLevels = 5;
+
+        if(target.writeBuffer) 
+        {            
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, target.writeBuffer.GetFramebufferId().val);
+            for (let mip = 0; mip < maxMipLevels; mip++)
+            {
+                // reisze framebuffer according to mip-level size.
+                let mipWidth  = (256 * Math.pow(0.5, mip));
+                let mipHeight = (256 * Math.pow(0.5, mip));
+
+                target.viewport = {width: mipWidth, height: mipHeight};
+                this.gl.viewport(0, 0, mipWidth, mipHeight);
+
+                let roughness = mip / (maxMipLevels - 1);
+                this.gl.uniform1f(this.gl.getUniformLocation(this.prefilterShader.GetId().val, "roughness"), roughness);
+
+                for (let i = 0; i < 6; i++)
+                {
+                    texInfo.dimension = this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i;
+
+                    this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, 
+                        texInfo.dimension, 
+                        this.prefilteredMap.GetId().val, mip); 
+            
+                    target.writeBuffer.Resize(mipWidth, mipHeight);
+
+                    if (this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) != this.gl.FRAMEBUFFER_COMPLETE) 
+                    {
+                        console.error('Framebuffer not complete');
+                    }
+                    
+                    this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.prefilterShader.GetId().val, "view"), false, captureViews[i]);
+
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+                    this.scene.renderer.Draw(geo.GetVertexArray(), this.prefilterShader, 36);
+                }
+            }
+        }
+        // Cleanup.
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
+
+    }
+
+    private GenreateBRDF() : void 
+    {
+        const target = this.scene.renderTarget;
+        let texInfo = this.brdf.GetTextureInfo();
+        target.viewport = {width: texInfo.width, height: texInfo.height};
+        this.scene.renderer.SetRenderTarget(this.scene.renderTarget);
+
+        const shader = this.brdfQuad.GetShader();
+
+        this.gl.useProgram(shader.GetId().val);
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.hdrImage.GetId().val);
+
+        if(target.writeBuffer) 
+        {
+            target.writeBuffer.SetColorAttachment(this.brdf, 0);
+
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    
+            this.scene.renderer.Draw(this.brdfQuad.GetVertexArray(), shader, 6);
+    
+            // Cleanup.
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+            target.writeBuffer.SetColorAttachment(this.scene.writeTexture, 0);
+            target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
+        }
+        
     }
 
     public GetHDRImage() : HDRImage { return this.hdrImage; }
@@ -193,7 +327,7 @@ export class Skybox
     private eqToCubShader : Shader = new Shader(eqToCubeVertSrc, eqToCubeFragSrc);
     private convoluteShader : Shader = new Shader(convoluteVertSrc, convoluteFragSrc);
     private prefilterShader : Shader = new Shader(prefilterVertSrc, prefilterFragSrc);
-    private brdfShader : Shader = new Shader(brdfVertSrc, brdfFragSrc);
+    private brdfQuad : Primitives.Square = new Primitives.Square(brdfVertSrc, brdfFragSrc);
     private scene : Scene;
     private gl : WebGL2RenderingContext;
 }   

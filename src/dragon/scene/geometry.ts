@@ -9,6 +9,11 @@ export abstract class Geometry
     }
 }
 
+/**
+ * @brief Handles all the VertexBuffer, IndexBuffer and VertexArray constructions to simplify
+ * geometry creation. Together with a Material instance, this can be used to construct a Mesh
+ * instance that will be rendered by the Scene.
+ */
 export class BoxGeometry extends Geometry
 {
     constructor() 
@@ -30,6 +35,44 @@ export class BoxGeometry extends Geometry
 
     public GetVertexArray() : VertexArray { return this.vertexArray; }
 
+    private vertexArray : VertexArray;
+};
+
+/**
+ * @brief Similar to BoxGeometry, but constructs a Sphere of a given radius and number of width
+ * and height segments.
+ */
+export class SphereGeometry extends Geometry
+{
+    /**
+     * @brief Constructs a Sphere instance of a given radius and number of width and height segments.
+     * @param radius Radius of the sphere.
+     * @param latCount Number of segments along the y-axis.
+     * @param lonCount Number of segments along the x-axis.
+     */
+    constructor(radius : number, latCount : number, lonCount : number) 
+    {
+        super();
+
+        const vertices = GenerateCompleteSphere(radius, latCount, lonCount).vertices
+        this.verticesCount = vertices.length / 8;
+
+        const cubeBuffer = new VertexBuffer(vertices);
+        const elements : BufferAttribute[] = new Array<BufferAttribute>(
+            new BufferAttribute(3, 12, "aPosition"),
+            new BufferAttribute(3, 12, "aNormal"),
+            new BufferAttribute(2, 8, "aUV")
+        );
+        
+        const layout : BufferAttribLayout = new BufferAttribLayout(elements);
+        cubeBuffer.SetLayout(layout);
+
+        this.vertexArray = new VertexArray(cubeBuffer);
+    }
+
+    public GetVertexArray() : VertexArray { return this.vertexArray; }
+
+    public verticesCount : number;
     private vertexArray : VertexArray;
 };
 

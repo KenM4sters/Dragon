@@ -36,8 +36,6 @@ export class Renderer
         {            
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         }
-                
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
     public End() : void

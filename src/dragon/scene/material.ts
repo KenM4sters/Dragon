@@ -17,7 +17,9 @@ export abstract class Material
     constructor() {}
 }
 
-
+/**
+ * @brief Wrapper around a shader instance that only supports a color and a texture.
+ */
 export class BasicMaterial extends Material 
 {
     constructor() 
@@ -40,6 +42,9 @@ export class BasicMaterial extends Material
     private shader : Shader;
 }
 
+/**
+ * @brief Wrapper around a shader instance that only supports a RawCubeTexture instance.
+ */
 export class SkyboxMaterial extends Material 
 {
     constructor(cubeTex : RawCubeTexture) 
@@ -56,7 +61,10 @@ export class SkyboxMaterial extends Material
     private shader : Shader;
 }
 
-
+/**
+ * @brief Wrapper around a shader instance that supports full PBR material properties 
+ * such as Metallnes, Roughness, Albedo and more.
+ */
 export class PhysicalMaterial extends Material 
 {
     constructor() 
