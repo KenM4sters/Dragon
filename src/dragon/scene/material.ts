@@ -12,6 +12,15 @@ import texFrag from "../resources/shaders/texture.frag?raw";
 import pbrFrag from "../resources/shaders/physical_material.frag?raw";
 
 
+export interface PhysicalMateralProps
+{   
+    albedo ?: glm.vec3;
+    metallic ?: number;
+    roughenss ?: number;
+    ao ?: number;
+    emission ?: number;
+};
+
 export abstract class Material 
 {
     constructor() {}
@@ -67,11 +76,17 @@ export class SkyboxMaterial extends Material
  */
 export class PhysicalMaterial extends Material 
 {
-    constructor() 
+    constructor(props : PhysicalMateralProps) 
     {
         super();
 
         this.shader = new Shader(mvpVert, pbrFrag);
+
+        if(props.albedo) this.albedo = props.albedo;
+        if(props.metallic) this.metallic = props.metallic;
+        if(props.roughenss) this.roughenss = props.roughenss;
+        if(props.ao) this.ao = props.ao;
+        if(props.emission) this.emission = props.emission;
     }
 
     public GetShader() : Shader { return this.shader; }

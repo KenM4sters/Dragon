@@ -70,10 +70,6 @@ export class Scene
         const writeBuffer = new Framebuffer(sceneFrameInfo);
 
         this.renderTarget = new RenderTarget(writeBuffer, sceneStageInfo);
-
-        this.camera = new PerspectiveCamera([0, 0, 5]);
-        
-        this.camera.UpdateProjectionMatrix(canvas.width, canvas.height);
     }
 
     public Add(child : Mesh | Light) : void 
@@ -125,9 +121,7 @@ export class Scene
      */
     public SetCamera(camera : PerspectiveCamera) : void 
     {
-        const canvas = WebGL.GetInstance().canvas;
         this.camera = camera;
-        this.camera.UpdateProjectionMatrix(canvas.width, canvas.height);
     }
 
     public GetAllChildren() : {meshes : Array<Mesh>, lights : Array<Light>} 
@@ -140,9 +134,7 @@ export class Scene
      * Renders all meshes and skyboxes.
      */
     public Render(elapsedTime: number, timeStep: number): void 
-    {
-        this.camera.UpdateViewMatrix();
-        
+    {        
         this.renderTarget.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
         this.renderer.SetRenderTarget(this.renderTarget);
         this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
@@ -181,7 +173,15 @@ export class Scene
                 }  
                 else if(mesh.geometry instanceof SphereGeometry) 
                 {
-                    this.renderer.Draw(mesh.geometry.GetVertexArray(), mesh.material.GetShader(), mesh.geometry.verticesCount);
+                    const vao = mesh.geometry.GetVertexArray();
+                    const EBO = vao.GetIndexBuffer();
+                    const shader = mesh.material.GetShader();
+                    this.gl.bindVertexArray(vao.GetId().val);
+                    this.gl.useProgram(shader.GetId().val);
+                    if(EBO) 
+                    {
+                        this.gl.drawElements(this.gl.TRIANGLES, EBO.GetUniqueSize() / EBO.GetUniqueIndices().BYTES_PER_ELEMENT, this.gl.UNSIGNED_SHORT, EBO.GetUniqueOffset());
+                    }
                 }     
             }
         } 
@@ -191,7 +191,7 @@ export class Scene
 
     public Resize(width: number, height: number): void 
     {
-        this.camera.UpdateProjectionMatrix(width, height);
+        this.camera.Resize(width, height);
 
         const writeTexInfo : RawTextureCreateInfo = 
         {
@@ -228,7 +228,7 @@ export class Scene
     public renderTarget : RenderTarget;
     public writeTexture : RawTexture2D;
     public lights : Array<Light> = new Array<Light>()
-    public camera : PerspectiveCamera;
+    public camera !: PerspectiveCamera;
     public skybox : Skybox | null = null;
     public gl : WebGL2RenderingContext;
 

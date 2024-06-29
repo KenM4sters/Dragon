@@ -107,7 +107,7 @@ export class Mesh
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "model"), false, modelMatrix);
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, camera.GetViewMatrix());
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, camera.GetProjectionMatrix());
-            gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uCameraPosition"), camera.GetPosition());
+            gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uCameraPosition"), camera.position);
     
             gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uMaterial.Albedo"), material.albedo);
             gl.uniform1f(gl.getUniformLocation(shader.GetId().val, "uMaterial.Metallic"), material.metallic);

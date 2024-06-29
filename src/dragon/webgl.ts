@@ -27,7 +27,7 @@ export class WebGL
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         
-        this.gl = this.canvas.getContext('webgl2') as WebGL2RenderingContext;
+        this.gl = this.canvas.getContext('webgl2', {antialias: false}) as WebGL2RenderingContext;
         if (!this.gl) throw new Error("webgl context is not available!");
 
         var ext1 = this.gl.getExtension('EXT_color_buffer_float');

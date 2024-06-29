@@ -51,8 +51,10 @@ export class SSAAPass extends SpecialFXPass
         target.writeBuffer = this.specialFx.target.writeBuffer;
         target.viewport = {width: this.gl.canvas.width * this.ssaaInfo.screenResMultiplier, height: this.gl.canvas.height * this.ssaaInfo.screenResMultiplier};
 
+        this.highResTexInfo.width = this.gl.canvas.width * this.ssaaInfo.screenResMultiplier;
+        this.highResTexInfo.height = this.gl.canvas.height * this.ssaaInfo.screenResMultiplier;
         this.renderer.SetRenderTarget(target);
-        // write.Resize(this.highResTexInfo);
+        write.Resize(this.highResTexInfo);
         target.writeBuffer?.SetColorAttachment(write, 0);
 
         this.gl.useProgram(this.screenQuad.GetShader().GetId().val);
@@ -68,14 +70,14 @@ export class SSAAPass extends SpecialFXPass
         this.renderer.SetRenderTarget(target);
         this.highResTexInfo.width = this.gl.canvas.width;
         this.highResTexInfo.height = this.gl.canvas.height;
-        // write.Resize(this.highResTexInfo);
-
+        
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(texInfo.dimension, read.GetId().val);
         this.gl.uniform1i(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "uToneMappedTexture"), 0);
-
+        
         this.renderer.Draw(this.screenQuad.GetVertexArray(), this.screenQuad.GetShader(), 6);
-
+        
+        write.Resize(this.highResTexInfo);
 
 
         this.renderer.End();

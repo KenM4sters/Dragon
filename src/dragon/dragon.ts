@@ -6,8 +6,8 @@ import { WebGL } from "./webgl";
 
 
 /**
- * @brief The main entry point for our application. A Dragon instances of the scene, graphics, 
- * script and assets and runs the game loop.
+ * @brief The main entry point for our application. Dragon has instances of the scene, graphics, 
+ * script and assets and runs the main game loop.
  */
 export class Dragon 
 {
@@ -95,6 +95,8 @@ export class Dragon
     public graphics : Graphics;
     public assets : Assets;
     public scene : Scene;
+    
+    public IsLoading : boolean = true;
 
     private animationCallback !: ((elapsedTime :number, timeStep : number) => void) | undefined;
     private animationFrameId : number = 0;

@@ -14,6 +14,6 @@ void main()
     vec3 envColor = texture(environmentMap, vLocalPos).rgb;
 
   
-    // FragColor = vec4(envColor, 1.0);
-    FragColor = vec4(0.1, 0.1, 0.1, 1.0);
+    FragColor = vec4(envColor, 1.0);
+    // FragColor = vec4(0.1, 0.1, 0.1, 1.0);
 }

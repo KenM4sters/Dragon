@@ -1,4 +1,4 @@
-import { BufferAttribLayout, BufferAttribute, Primitives, VertexArray, VertexBuffer } from "../export";
+import { BufferAttribLayout, BufferAttribute, IndexBuffer, Primitives, VertexArray, VertexBuffer } from "../export";
 
 
 export abstract class Geometry 
@@ -54,10 +54,11 @@ export class SphereGeometry extends Geometry
     {
         super();
 
-        const vertices = GenerateCompleteSphere(radius, latCount, lonCount).vertices
-        this.verticesCount = vertices.length / 8;
+        const data = GenerateCompleteSphere(radius, latCount, lonCount)
 
-        const cubeBuffer = new VertexBuffer(vertices);
+        this.verticesCount = data.vertices.length / 8;
+
+        const cubeBuffer = new VertexBuffer(data.vertices);
         const elements : BufferAttribute[] = new Array<BufferAttribute>(
             new BufferAttribute(3, 12, "aPosition"),
             new BufferAttribute(3, 12, "aNormal"),
@@ -67,7 +68,9 @@ export class SphereGeometry extends Geometry
         const layout : BufferAttribLayout = new BufferAttribLayout(elements);
         cubeBuffer.SetLayout(layout);
 
-        this.vertexArray = new VertexArray(cubeBuffer);
+        var EBO = new IndexBuffer(data.indices);
+
+        this.vertexArray = new VertexArray(cubeBuffer, EBO);
     }
 
     public GetVertexArray() : VertexArray { return this.vertexArray; }

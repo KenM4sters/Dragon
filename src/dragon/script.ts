@@ -13,7 +13,21 @@ export abstract class IScript
         this.Loop = this.Loop.bind(this); 
     }
 
+    /**
+     * @brief This function should be defined within the derived class and should intialize 
+     * all scene objects.
+     */
     public abstract Initialize() : void;
+
+    /**
+     * @brief This is the main loop function that Dragon will, provided that you've set it
+     * with dragon.SetAnimationLoop(). Techincally, you could set it to be any function.
+     * dragon.Update() is the only function that must be called within this Loop.
+     * @param elapsedTime Time since the start of the application.
+     * @param timeStep Time between each frame.
+     */
     public abstract Loop(elapsedTime : number, timeStep : number) : void;
+
+    public isReady : boolean = false;
 
 };
