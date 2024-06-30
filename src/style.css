@@ -6,7 +6,8 @@ body
     padding: 0;
     font-family: 'Montserrat', 'sans-serif';
     overflow-x: hidden;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
+
 }
 
 #canvas 
@@ -57,7 +58,6 @@ body
     align-items: center;
     right: 43%;
     color: rgb(180, 188, 192);
-
 }
 
 .navbar 
@@ -65,7 +65,7 @@ body
     width: 100vw;
     height: 10vh;
     display: flex;
-    justify-content: end;
+    justify-content: start;
     flex-direction: row;
     column-gap: 5vw;
     place-items: center;
@@ -73,13 +73,26 @@ body
 
 .navbar-items-container 
 {
-    margin-right: 10vw;
+    margin-left: 2vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
     display: flex;
     justify-content: center;
     flex-direction: row;
     column-gap: 2vw;
     place-items: center;   
     list-style: none; 
+    border-radius: 5px;
+    /* background-color: rgb(0, 110, 255); */
+}
+
+.navbar-item 
+{
+    display: flex;
+    justify-content: center;
+    place-items: center;
 }
 
 .navbar-item a
@@ -87,14 +100,32 @@ body
     text-decoration: none;
     cursor: pointer;
     font-weight: 500;
-    color: rgb(168, 172, 174);
+    color: rgb(198, 198, 198);
     transition: all;
 }
 
 .navbar-item a:hover 
-{
-    color: rgb(190, 221, 231);
+{  
+    color: rgb(255, 255, 255);
     transition-duration: 0.5s;
+}
+
+.projects-hint 
+{
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    font-size: calc(0.2vw + 0.2vh + 0.5rem);
+    position: absolute;
+    width: 8vw;
+    height: 8vw;
+    top: 80%;
+    left: 46%;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 100%;
+    /* background-color: rgb(48, 135, 255); */
+    color: whitesmoke;
 }
 
 
@@ -112,13 +143,13 @@ body
     justify-content: center;
     place-items: center;
     row-gap: 10vh;
-    background-color: rgb(27, 27, 27);
+    background-color: rgb(207, 207, 207);
 }
 
 .projects-title 
 {
     font-size: calc(1.0vh + 1.0rem);
-    color: rgb(197, 197, 197);
+    color: rgb(38, 38, 38);
 }
 
 .projects-navbar 
@@ -131,12 +162,12 @@ body
     place-items: center;
     column-gap: 3vw;
     border-radius: 15px;
-    background-color: rgba(221, 221, 221, 0.007);
+    background-color: rgba(54, 54, 54, 0.028);
 }
 
 .project-item 
 {
-    color: rgb(151, 156, 160);
+    color: rgb(48, 50, 52);
     border-radius: 15px;
     cursor: pointer;
     font-size: calc(0.5vh + 0.6rem);
@@ -145,7 +176,7 @@ body
 
 .selected-project 
 {
-    color: rgb(197, 224, 234);
+    color: rgb(63, 140, 255);
 }
  
 .projects-container 
@@ -205,19 +236,19 @@ body
 
 .project-meta-data p1 
 {
-    color: rgb(192, 192, 192);
-    font-weight: 500;
+    color: rgb(46, 46, 46);
+    font-weight: 600;
     text-decoration: underline;
     font-size: calc(0.6vh + 0.5rem);
 }
 .project-meta-data p4
 {
-    color: rgb(192, 192, 192);
+    color: rgb(39, 39, 39);
     font-size: calc(0.5vh + 0.5rem);
 }
 .project-meta-data a
 {
-    color: rgb(192, 192, 192);
+    color: rgb(37, 37, 37);
     font-size: calc(0.5vh + 0.5rem);
     text-decoration: none;
 }
@@ -229,10 +260,19 @@ body
     place-items: left;
     flex-direction: column;
     row-gap: 1vh;
-    color: rgb(192, 197, 201);
+    color: rgb(43, 43, 43);
     font-size: calc(0.6vw + 0.4rem);
 }
 
+.code-link 
+{
+    background-color: white;
+    border-radius: 5px;
+    color: black;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.1rem;
+}
 
 /**
 * About

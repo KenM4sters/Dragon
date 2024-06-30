@@ -72,7 +72,7 @@ export class SSAAPass extends SpecialFXPass
         this.highResTexInfo.height = this.gl.canvas.height;
         
         this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(texInfo.dimension, read.GetId().val);
+        this.gl.bindTexture(texInfo.dimension, write.GetId().val);
         this.gl.uniform1i(this.gl.getUniformLocation(this.screenQuad.GetShader().GetId().val, "uToneMappedTexture"), 0);
         
         this.renderer.Draw(this.screenQuad.GetVertexArray(), this.screenQuad.GetShader(), 6);

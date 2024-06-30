@@ -30,6 +30,8 @@ export class TurnTableController extends CameraController
         this.input.AddMouseUpCallback((e : MouseEvent) => this.OnMouseUp(e)); 
         this.input.AddScrollCallback((e : WheelEvent) => this.OnScroll(e)); 
 
+        this.camera.position = glm.vec3.fromValues(0, 5, 10);
+
         this.spherical.setFromVector3(this.camera.position);
 
         const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, this.camera.target, this.camera.up);
@@ -156,7 +158,14 @@ export class FPSController extends CameraController
     constructor(camera : PerspectiveCamera) 
     {
         super(camera);
-        window.addEventListener("keydown",(e : KeyboardEvent) => this.OnKeyDown(e));
+        window.addEventListener("keydown", (e : KeyboardEvent) => this.OnKeyDown(e));
+
+        this.camera.position = glm.vec3.fromValues(-3, 0, -1);
+
+        this.camera.front = [1.0, 0.0, 0.0];
+
+        this.UpdateCameraViewMatrix();
+        this.UpdateCameraProjectionMatrix();
     }
 
     public Update(timeStep : number) : void 
@@ -166,10 +175,45 @@ export class FPSController extends CameraController
 
     private OnKeyDown(event : KeyboardEvent) : void 
     {
-        if(event.code == "w") 
-        {
-            glm.vec3.add(this.camera.position, this.camera.position, this.camera.target);
-        }
+        // if(event.code == "w") 
+        // {
+        //     glm.vec3.add(this.camera.position, this.camera.position, this.camera.target);
+        //     glm.vec3.multiply(this.camera.position, this.camera.position, glm.vec3.fromValues(this.timeStep, this.timeStep, this.timeStep));
+        // }
+        // if(event.code == "A") 
+        // {
+        //     glm.vec3.add(this.camera.position, this.camera.position, this.camera.target);
+        //     glm.vec3.multiply(this.camera.position, this.camera.position, glm.vec3.fromValues(this.timeStep, this.timeStep, this.timeStep));
+        // }
+        // if(event.code == "S") 
+        // {
+        //     glm.vec3.add(this.camera.position, this.camera.position, this.camera.target);
+        //     glm.vec3.multiply(this.camera.position, this.camera.position, glm.vec3.fromValues(this.timeStep, this.timeStep, this.timeStep));
+        // }
+        // if(event.code == "D") 
+        // {
+        //     glm.vec3.add(this.camera.position, this.camera.position, this.camera.target);
+        //     glm.vec3.multiply(this.camera.position, this.camera.position, glm.vec3.fromValues(this.timeStep, this.timeStep, this.timeStep));
+        // }
+
+        this.UpdateCameraDirections();
+    }
+
+    private UpdateCameraDirections() : void 
+    {
+    }
+
+    private UpdateCameraViewMatrix() : void 
+    {
+        const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, glm.vec3.add(glm.vec3.create(), this.camera.position, this.camera.front), this.camera.up);
+        this.camera.SetViewMatrix(viewMatrix);
+    }
+
+    private UpdateCameraProjectionMatrix() : void 
+    {
+        const projectionMatrix = glm.mat4.perspective(glm.mat4.create(),
+        glm.glMatrix.toRadian(this.camera.fov), this.canvas.width / this.canvas.height, 0.1, 100.0);
+        this.camera.SetProjectionMatrix(projectionMatrix);
     }
 
     private timeStep : number = 0.016;

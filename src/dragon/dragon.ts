@@ -1,5 +1,6 @@
 import Assets from "./assets";
 import { Graphics } from "./graphics/graphics";
+import { Preloader } from "./preloader";
 import { Scene } from "./scene/scene";
 import { IScript } from "./script";
 import { WebGL } from "./webgl";
@@ -18,13 +19,32 @@ export class Dragon
     constructor(script : IScript) 
     {
         this.script = script;
+
         this.graphics = new Graphics();
+        this.preloader = new Preloader();
         this.assets = Assets.GetInstance();
         this.scene = new Scene(this.graphics); 
 
-        this.assets.LoadAllAssets(() => script.Initialize());
+        this.assets.LoadAllAssets(() => {
+            this.isReady = true;
+            script.Initialize(); 
+        });
 
         window.addEventListener("resize", () => this.OnResize());
+
+        if(!this.isReady) 
+        {
+            this.DrawPreloader();
+        }
+    }
+
+    public DrawPreloader() : void 
+    {
+
+        
+        this.preloader.Update(this.elapsedTime, this.timeStep);
+
+        this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
     }
 
     /**
@@ -95,6 +115,7 @@ export class Dragon
     public graphics : Graphics;
     public assets : Assets;
     public scene : Scene;
+    public preloader : Preloader;
     
     public IsLoading : boolean = true;
 
@@ -103,5 +124,6 @@ export class Dragon
     private lastFrame : number = 0;
     private elapsedTime : number = 0;
     private timeStep : number = 0;
+    private isReady : boolean = false;
 
 }

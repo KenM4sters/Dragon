@@ -1,4 +1,4 @@
-import { TurnTableController } from "./dragon/controller";
+import { FPSController, TurnTableController } from "./dragon/controller";
 import * as DRAGON from "./dragon/export";
 import * as glm from "gl-matrix";
 
@@ -35,27 +35,40 @@ export class Script extends DRAGON.IScript
         
         this.dragon.scene.SetCamera(camera);
 
-        this.cameraController = new TurnTableController(camera);
+        // this.cameraController = new TurnTableController(camera);
+        this.cameraController = new FPSController(camera);
 
         this.dragon.scene.AddBackground("ocean");
 
         let matHM = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.1, metallic: 0.9});
         let geoHM = new DRAGON.SphereGeometry(0.2, 50, 50);
         let sphereHM = new DRAGON.Mesh(geoHM, matHM);
+        sphereHM.position = [0.0, 0.0, -2.0];
 
-        let floorMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.8, metallic: 0.1});
+        let matHR = new DRAGON.PhysicalMaterial({albedo: [1.0, 0.0, 0.0], ao: 1.0, roughenss: 0.9, metallic: 0.1});
+        let geoHR = new DRAGON.SphereGeometry(0.2, 50, 50);
+        let sphereHR = new DRAGON.Mesh(geoHR, matHR);
+        sphereHR.position = [0.0, 0.0, -1.5];
+
+        let matMM = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.9, metallic: 0.1});
+        let geoMM = new DRAGON.SphereGeometry(0.2, 50, 50);
+        let sphereMM = new DRAGON.Mesh(geoMM, matMM);
+        sphereMM.position = [0.0, 0.0, -1.0];
+
+
+        let floorMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.9, metallic: 0.1});
         let floorGeo = new DRAGON.BoxGeometry();
         let floorMesh = new DRAGON.Mesh(floorGeo, floorMat);
         floorMesh.position = [0.0, -5.0, 0.0];
         floorMesh.scale = [5.0, 0.1, 5.0];
         
-        let sideWallMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.8, metallic: 0.1});
+        let sideWallMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.9, metallic: 0.1});
         let sideWallGeo = new DRAGON.BoxGeometry();
         let sideWallMesh = new DRAGON.Mesh(sideWallGeo, sideWallMat);
         sideWallMesh.position = [-50.0, 0.8, 0.0];
         sideWallMesh.scale = [0.1, 2.0, 5.0];
 
-        let backWallMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.8, metallic: 0.1});
+        let backWallMat = new DRAGON.PhysicalMaterial({albedo: [1.0, 1.0, 1.0], ao: 1.0, roughenss: 0.9, metallic: 0.1});
         let backWallGeo = new DRAGON.BoxGeometry();
         let backWallMesh = new DRAGON.Mesh(backWallGeo, backWallMat);
         backWallMesh.position = [0.0, 0.8, -50.0];
@@ -63,11 +76,13 @@ export class Script extends DRAGON.IScript
 
 
         this.dragon.scene.Add(sphereHM);
+        this.dragon.scene.Add(sphereHR);
+        this.dragon.scene.Add(sphereMM);
         this.dragon.scene.Add(floorMesh);
         this.dragon.scene.Add(backWallMesh);
         this.dragon.scene.Add(sideWallMesh);
 
-        const pointLight = new DRAGON.PointLight([10.0, 10.0, 10.0], [1.0, 1.0, 1.0], 30.0);
+        const pointLight = new DRAGON.PointLight([-10, 10, 10], [1.0, 1.0, 1.0], 2);
         
         this.dragon.scene.Add(pointLight);
         
@@ -84,6 +99,6 @@ export class Script extends DRAGON.IScript
     }
 
     private dragon : DRAGON.Dragon;
-    private cameraController !: TurnTableController;
+    private cameraController !: FPSController | TurnTableController;
     
 };

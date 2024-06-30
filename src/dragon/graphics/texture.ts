@@ -64,6 +64,9 @@ export class RawTexture2D extends Texture
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_S, createInfo.samplerInfo.sWrap);
         this.gl.texParameteri(createInfo.samplerInfo.dimension, this.gl.TEXTURE_WRAP_T, createInfo.samplerInfo.tWrap);
 
+        this.gl.pixelStorei(this.gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, this.gl.NONE);
+        this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+
         this.gl.texImage2D(createInfo.dimension, 0, createInfo.format, createInfo.width, createInfo.height, 0, createInfo.nChannels, createInfo.type, createInfo.data);
         
         // Check for texture errors

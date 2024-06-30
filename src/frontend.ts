@@ -29,7 +29,7 @@ export class Frontend
     app.appendChild(landing);
     app.appendChild(projects);
     // app.appendChild(about);
-    app.appendChild(links);
+    // app.appendChild(links);
 
 
     const mammoth2d = new Project(mammoth2dHTML);

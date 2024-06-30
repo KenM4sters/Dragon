@@ -84,7 +84,7 @@ export class SpecialFX implements Layer
 
         const ssaaInfo : SSAAPassCreateInfo = 
         {
-            screenResMultiplier: 4
+            screenResMultiplier: 2
         };
     
         // this.passes.push(new BloomPass(this, bloomInfo));

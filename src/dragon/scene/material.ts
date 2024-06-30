@@ -52,6 +52,31 @@ export class BasicMaterial extends Material
 }
 
 /**
+ * @brief Wrapper around a shader instance that renders the normals as colors.
+ */
+export class NormalMaterial extends Material 
+{
+    constructor() 
+    {
+        super();
+
+        this.shader = new Shader(mvpVert, rawFrag);
+    }
+
+    public AddTexture(texture : Texture | Image) : void 
+    {
+        this.texture = texture;
+
+        this.shader.Compile(mvpVert, texFrag);
+    }
+
+    public GetShader() : Shader { return this.shader; }
+
+    public texture : Texture | Image | null = null;
+    private shader : Shader;
+}
+
+/**
  * @brief Wrapper around a shader instance that only supports a RawCubeTexture instance.
  */
 export class SkyboxMaterial extends Material 
@@ -93,9 +118,9 @@ export class PhysicalMaterial extends Material
 
     private shader : Shader;
 
-    public albedo : glm.vec3 = glm.vec3.fromValues(0.2, 0.4, 0.8);
+    public albedo : glm.vec3 = glm.vec3.fromValues(1.0, 1.0, 1.0);
     public metallic : number = 0.3;
     public roughenss : number = 0.8;
-    public ao : number = 0.1;
+    public ao : number = 0.5;
     public emission : number = 0.0;
 }

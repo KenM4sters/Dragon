@@ -41,4 +41,5 @@ vec3 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution) {
 void main() 
 {
     FragColor = vec4(fxaa(uToneMappedTexture, vUV * uResolution, uResolution), 1.0);
+    // FragColor = vec4(texture(uToneMappedTexture, vUV).rgb, 1.0);
 }
