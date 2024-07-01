@@ -31,7 +31,7 @@ export class ToneMappingPass extends SpecialFXPass
         
         this.renderer.SetRenderTarget(target);
 
-        target.writeBuffer?.SetColorAttachment(write, 0);
+        target.writeBuffer?.SetColorAttachment(write, this.gl.COLOR_ATTACHMENT0);
 
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 

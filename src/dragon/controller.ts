@@ -28,7 +28,7 @@ export class TurnTableController extends CameraController
         this.input.AddMouseMoveCallback((e : MouseEvent) => this.OnMouseMove(e)); 
         this.input.AddMouseDownCallback((e: MouseEvent) => this.OnMouseDown(e)); 
         this.input.AddMouseUpCallback((e : MouseEvent) => this.OnMouseUp(e)); 
-        this.input.AddScrollCallback((e : WheelEvent) => this.OnScroll(e)); 
+        // this.input.AddScrollCallback((e : WheelEvent) => this.OnScroll(e)); 
 
         this.camera.position = glm.vec3.fromValues(0, 5, 10);
 
@@ -66,38 +66,41 @@ export class TurnTableController extends CameraController
 
     private OnMouseMove(event : MouseEvent) : void 
     {
-        if(!this.isDragging) 
+        if(this.camera.controllable) 
         {
-            return;
+            if(!this.isDragging) 
+            {
+                return;
+            }
+    
+            const deltaMove = {
+                x: event.clientX - this.previousMousePosition[0],
+                y: event.clientY - this.previousMousePosition[1],
+            }
+    
+            this.spherical.setFromVector3(this.camera.position);
+    
+            this.spherical.theta -= deltaMove.x * this.mouseSensitivity;
+            this.spherical.phi = Clamp(this.spherical.phi - deltaMove.y * this.mouseSensitivity, 0.1, Math.PI - 0.1);
+    
+            const cartesian = SphericalToCartesian(this.spherical.radius, this.spherical.theta, this.spherical.phi);
+    
+            const newPosition = glm.vec3.add(glm.vec3.create(), cartesian, [0, 0, 0]);
+            
+            this.camera.position = newPosition;
+    
+            const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, this.camera.target, this.camera.up);
+    
+            this.camera.SetViewMatrix(viewMatrix);
+    
+            this.previousMousePosition = [event.clientX, event.clientY];
         }
-
-        const deltaMove = {
-            x: event.clientX - this.previousMousePosition[0],
-            y: event.clientY - this.previousMousePosition[1],
-        }
-
-        this.spherical.setFromVector3(this.camera.position);
-
-        this.spherical.theta -= deltaMove.x * this.mouseSensitivity;
-        this.spherical.phi = Clamp(this.spherical.phi - deltaMove.y * this.mouseSensitivity, 0.1, Math.PI - 0.1);
-
-        const cartesian = SphericalToCartesian(this.spherical.radius, this.spherical.theta, this.spherical.phi);
-
-        const newPosition = glm.vec3.add(glm.vec3.create(), cartesian, [0, 0, 0]);
-        
-        this.camera.position = newPosition;
-
-        const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, this.camera.target, this.camera.up);
-
-        this.camera.SetViewMatrix(viewMatrix);
-
-        this.previousMousePosition = [event.clientX, event.clientY];
     }
 
     private OnMouseDown(event : MouseEvent) : void 
     {
         this.isDragging = true;
-
+        
         this.previousMousePosition = [event.clientX, event.clientY];
     }
 
@@ -105,6 +108,27 @@ export class TurnTableController extends CameraController
     private OnMouseUp(event : MouseEvent) : void 
     {
         this.isDragging = false;
+    }
+
+    public UpdateCameraViewMatrix() : void 
+    {
+        this.spherical.setFromVector3(this.camera.position);
+
+        const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, this.camera.target, this.camera.up);
+    
+        this.camera.SetViewMatrix(viewMatrix);
+    }
+
+    public UpdateCameraProjectionMatrix() : void 
+    {
+        const projectionMatrix = glm.mat4.perspective(
+            glm.mat4.create(), 
+            glm.glMatrix.toRadian(this.camera.fov), 
+            this.canvas.width / this.canvas.height, 
+            0.1, 
+            100
+        );
+        this.camera.SetProjectionMatrix(projectionMatrix);
     }
 
     private OnScroll(event : WheelEvent) : void 
@@ -144,7 +168,7 @@ export class TurnTableController extends CameraController
     private previousMousePosition : glm.vec2 = [0, 0];
     private zoomFactor : number = 46;
     private zoomSensitivity : number = 0.01;
-    private mouseSensitivity : number = 0.01;
+    private mouseSensitivity : number = 0.005;
     private cameraStartPosition : glm.vec3 = [0, 0, 0];
     private cameraTargetPosition : glm.vec3 = [0, 0, 0];
     private lerpTime : number = 0;
@@ -203,13 +227,13 @@ export class FPSController extends CameraController
     {
     }
 
-    private UpdateCameraViewMatrix() : void 
+    public UpdateCameraViewMatrix() : void 
     {
         const viewMatrix = glm.mat4.lookAt(glm.mat4.create(), this.camera.position, glm.vec3.add(glm.vec3.create(), this.camera.position, this.camera.front), this.camera.up);
         this.camera.SetViewMatrix(viewMatrix);
     }
 
-    private UpdateCameraProjectionMatrix() : void 
+    public UpdateCameraProjectionMatrix() : void 
     {
         const projectionMatrix = glm.mat4.perspective(glm.mat4.create(),
         glm.glMatrix.toRadian(this.camera.fov), this.canvas.width / this.canvas.height, 0.1, 100.0);

@@ -1,5 +1,6 @@
 import Assets from "./assets";
 import { Graphics } from "./graphics/graphics";
+import { Interface } from "./interface";
 import { Preloader } from "./preloader";
 import { Scene } from "./scene/scene";
 import { IScript } from "./script";
@@ -24,10 +25,11 @@ export class Dragon
         this.preloader = new Preloader();
         this.assets = Assets.GetInstance();
         this.scene = new Scene(this.graphics); 
-
+        
         this.assets.LoadAllAssets(() => {
-            this.isReady = true;
             script.Initialize(); 
+            this.isReady = true;
+            this.interface = new Interface(this);
         });
 
         window.addEventListener("resize", () => this.OnResize());
@@ -40,10 +42,6 @@ export class Dragon
 
     public DrawPreloader() : void 
     {
-
-        
-        this.preloader.Update(this.elapsedTime, this.timeStep);
-
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
     }
 
@@ -64,9 +62,14 @@ export class Dragon
         this.timeStep = elapsedTime - this.lastFrame;
         this.lastFrame = elapsedTime;
 
-        if(this.animationCallback) 
+
+        if(this.animationCallback && this.isReady) 
         {
             this.animationCallback(elapsedTime, this.timeStep);
+        }
+        else         
+        {
+            this.preloader.Update(this.elapsedTime, this.timeStep);
         }
 
         this.animationFrameId = requestAnimationFrame((elapsedTime) => this.AnimationLoop(elapsedTime));
@@ -111,19 +114,18 @@ export class Dragon
     }
 
     
-    public script : IScript;
-    public graphics : Graphics;
-    public assets : Assets;
     public scene : Scene;
-    public preloader : Preloader;
-    
-    public IsLoading : boolean = true;
+    public graphics : Graphics;
+    private script : IScript;
+    private assets : Assets;
+    private interface !: Interface;
+    private preloader : Preloader;
 
+    private isReady : boolean = false;
     private animationCallback !: ((elapsedTime :number, timeStep : number) => void) | undefined;
     private animationFrameId : number = 0;
     private lastFrame : number = 0;
     private elapsedTime : number = 0;
     private timeStep : number = 0;
-    private isReady : boolean = false;
 
 }

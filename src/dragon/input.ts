@@ -18,7 +18,7 @@ export class Input
     public AddMouseMoveCallback(callback : MouseCallback) : void 
     {
         this.mouseMoveCallbacks.push(callback);
-    }
+    } 
 
     public AddMouseUpCallback(callback : MouseCallback) : void 
     {

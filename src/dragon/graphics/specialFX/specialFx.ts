@@ -50,7 +50,7 @@ export class SpecialFX implements Layer
         const writeBufferInfo : FramebufferCreateInfo = 
         {
             targetTexture: this.pong,
-            attachmentUnit: 0,
+            attachment: this.gl.COLOR_ATTACHMENT0,
             renderBufferCreateInfo: null
         };
 
@@ -91,7 +91,7 @@ export class SpecialFX implements Layer
         this.passes.push(new ToneMappingPass(this, hdrInfo));
         // this.passes.push(new SSAAPass(this, ssaaInfo));
         this.passes.push(new FXAAPass(this, fxaaInfo));
-    }
+    }  
 
     public Render() : void 
     {

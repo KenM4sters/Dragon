@@ -5,7 +5,7 @@ import { Ref, WebGL } from "../webgl";
 export interface FramebufferCreateInfo 
 {
     targetTexture : RawTexture2D;
-    attachmentUnit : number;
+    attachment : number;
     renderBufferCreateInfo : RenderbufferCreateInfo | null;
 }; 
 
@@ -40,11 +40,10 @@ export class Framebuffer
         // Create native framebuffer
         //
         const texInfo = createInfo.targetTexture.GetTextureInfo();
-        const attachmentUnit = this.gl.COLOR_ATTACHMENT0 + createInfo.attachmentUnit;
         this.gl.bindTexture(texInfo.dimension, createInfo.targetTexture.GetId().val); 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
         
-        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachmentUnit, 
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, createInfo.attachment, 
             createInfo.targetTexture.GetTextureInfo().dimension, 
             createInfo.targetTexture.GetId().val, 0); 
         
@@ -103,12 +102,10 @@ export class Framebuffer
         }
     }
 
-    public SetColorAttachment(texture : RawTexture2D | RawCubeTexture, attachmentUnit : number, level : number = 0) 
+    public SetColorAttachment(texture : RawTexture2D | RawCubeTexture, attachment : number, level : number = 0) 
     {
-        const unit = this.gl.COLOR_ATTACHMENT0 + attachmentUnit;
-
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebufferId.val);
-        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, unit, 
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, attachment, 
             texture.GetTextureInfo().dimension, 
             texture.GetId().val, level); 
 

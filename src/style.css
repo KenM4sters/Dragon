@@ -76,16 +76,17 @@ body
     margin-left: 2vw;
     padding-left: 2vw;
     padding-right: 2vw;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
+    padding-top: calc(0.5vh + 0.5vw);
+    padding-bottom: calc(0.5vh + 0.5vw);
     display: flex;
     justify-content: center;
     flex-direction: row;
     column-gap: 2vw;
     place-items: center;   
     list-style: none; 
-    border-radius: 5px;
-    /* background-color: rgb(0, 110, 255); */
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.736);
+
 }
 
 .navbar-item 
@@ -100,13 +101,74 @@ body
     text-decoration: none;
     cursor: pointer;
     font-weight: 500;
-    color: rgb(198, 198, 198);
+    color: rgb(63, 63, 63);
     transition: all;
 }
 
 .navbar-item a:hover 
 {  
-    color: rgb(255, 255, 255);
+    color: rgb(90, 144, 215);
+    transition-duration: 0.2s;
+}
+
+.scene-view-container 
+{
+    width: 100vw;
+    height: calc(4vh + 6rem);
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    flex-direction: row;
+    column-gap: 0;
+}
+
+.scene-view 
+{
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.463);
+    border-radius: 25px;
+    width: calc(3vw + 6rem);
+    height: calc(1vh + 2rem);
+    display: flex;
+    justify-content: space-around;
+    place-items: center;
+    flex-direction: row;
+}
+.scene-view-icon
+{
+    cursor: pointer;
+    z-index: 2;
+}
+
+.selected-scene-view 
+{
+    color: white;
+}
+
+.unselected-scene-view 
+{
+    color: black;
+}
+
+.viewing-camera 
+{
+    left: 0%;
+}
+
+.viewing-satellite 
+{
+    right: 0%;
+}
+
+.scene-view-slider 
+{
+    background-color: rgb(115, 163, 205);
+    z-index: 1;
+    width: calc(2vw + 3rem);
+    height: calc(1vh + 2rem);
+    position: absolute;
+    border-radius: 25px;
+    transition: all;
     transition-duration: 0.5s;
 }
 
@@ -122,10 +184,10 @@ body
     top: 80%;
     left: 46%;
     text-align: center;
-    font-weight: 600;
+    font-weight: 500;
     border-radius: 100%;
     /* background-color: rgb(48, 135, 255); */
-    color: whitesmoke;
+    color: rgb(239, 239, 239);
 }
 
 
@@ -143,7 +205,7 @@ body
     justify-content: center;
     place-items: center;
     row-gap: 10vh;
-    background-color: rgb(207, 207, 207);
+    background-color: rgb(224, 224, 224);
 }
 
 .projects-title 
@@ -176,7 +238,7 @@ body
 
 .selected-project 
 {
-    color: rgb(63, 140, 255);
+    color: rgb(115, 163, 205);
 }
  
 .projects-container 
@@ -266,12 +328,16 @@ body
 
 .code-link 
 {
-    background-color: white;
-    border-radius: 5px;
-    color: black;
+    color: rgb(221, 221, 221);
     font-weight: 500;
     text-decoration: none;
-    padding: 0.1rem;
+    transition: all;
+    transition-duration: 0.4s;
+}
+
+.code-link:hover 
+{
+    color: rgb(55, 90, 136);
 }
 
 /**

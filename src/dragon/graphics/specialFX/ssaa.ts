@@ -55,7 +55,7 @@ export class SSAAPass extends SpecialFXPass
         this.highResTexInfo.height = this.gl.canvas.height * this.ssaaInfo.screenResMultiplier;
         this.renderer.SetRenderTarget(target);
         write.Resize(this.highResTexInfo);
-        target.writeBuffer?.SetColorAttachment(write, 0);
+        target.writeBuffer?.SetColorAttachment(write, this.gl.COLOR_ATTACHMENT0);
 
         this.gl.useProgram(this.screenQuad.GetShader().GetId().val);
         this.gl.activeTexture(this.gl.TEXTURE0);

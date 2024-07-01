@@ -87,7 +87,9 @@ void main()
     const float MAX_REFLECTION_LOD = 4.0;
     vec3 prefilteredColor = textureLod(uPrefilteredMap, R, 0.0).rgb;   
     vec2 envBRDF  = texture(uBRDF, vec2(max(dot(N, V), 0.0), uMaterial.Roughness)).rg;
-    vec3 finalSpecular = prefilteredColor * (FR * envBRDF.x + envBRDF.y);
+    // vec3 finalSpecular = prefilteredColor * (FR * envBRDF.x + envBRDF.y);
+    vec3 finalSpecular = prefilteredColor * (FR);
+
     
     vec3 ambient = (kD * diffuse + finalSpecular) * uMaterial.AO; 
     vec3 color = ambient + Lo; 

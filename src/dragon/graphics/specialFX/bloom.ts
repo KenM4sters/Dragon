@@ -92,7 +92,7 @@ export class BloomPass extends SpecialFXPass
         
         // Combining the blurred and scene textures and writing to the write texture.
         //
-        target.writeBuffer?.SetColorAttachment(write, 0);
+        target.writeBuffer?.SetColorAttachment(write, this.gl.COLOR_ATTACHMENT0);
         this.gl.useProgram(this.screenQuad.GetShader().GetId().val);
 
         this.gl.activeTexture(this.gl.TEXTURE0);
@@ -156,7 +156,7 @@ export class BloomPass extends SpecialFXPass
             
             this.gl.viewport(0, 0, mipInfo.width, mipInfo.height);
             
-            writeBuffer?.SetColorAttachment(bloomMip, 0);
+            writeBuffer?.SetColorAttachment(bloomMip, this.gl.COLOR_ATTACHMENT0);
             
             this.gl.uniform2fv(this.gl.getUniformLocation(this.downsampleShader.GetId().val, "srcResolution"), glm.vec2.fromValues(mipInfo.width, mipInfo.height));
             
@@ -187,7 +187,7 @@ export class BloomPass extends SpecialFXPass
             
             this.gl.bindTexture(bloomMip.GetTextureInfo().dimension, bloomMip.GetId().val);
 
-            writeBuffer?.SetColorAttachment(nextBloomMip, 0);
+            writeBuffer?.SetColorAttachment(nextBloomMip, this.gl.COLOR_ATTACHMENT0);
 
             this.renderer.Draw(this.screenQuad.GetVertexArray(), this.upsampleShader, 6);
         }

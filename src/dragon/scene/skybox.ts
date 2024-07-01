@@ -160,7 +160,7 @@ export class Skybox
 
             if(target.writeBuffer) 
             {                
-                target.writeBuffer.SetColorAttachment(this.cubeMap, 0);
+                target.writeBuffer.SetColorAttachment(this.cubeMap, this.gl.COLOR_ATTACHMENT0);
 
                 if (this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) != this.gl.FRAMEBUFFER_COMPLETE) 
                 {
@@ -175,7 +175,7 @@ export class Skybox
             this.scene.renderer.Draw(geo.GetVertexArray(), this.eqToCubShader, 36);
         } 
 
-        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, this.gl.COLOR_ATTACHMENT0);
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
 
 
@@ -198,7 +198,7 @@ export class Skybox
 
             if(target.writeBuffer) 
             {                
-                target.writeBuffer.SetColorAttachment(this.convolutedMap, 0);
+                target.writeBuffer.SetColorAttachment(this.convolutedMap, this.gl.COLOR_ATTACHMENT0);
 
                 if (this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) != this.gl.FRAMEBUFFER_COMPLETE) 
                 {
@@ -215,7 +215,7 @@ export class Skybox
 
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
-        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, this.gl.COLOR_ATTACHMENT0);
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
 
 
@@ -275,7 +275,7 @@ export class Skybox
         // Cleanup.
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
-        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, 0);
+        target.writeBuffer?.SetColorAttachment(this.scene.writeTexture, this.gl.COLOR_ATTACHMENT0);
         target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
 
     }
@@ -295,7 +295,7 @@ export class Skybox
 
         if(target.writeBuffer) 
         {
-            target.writeBuffer.SetColorAttachment(this.brdf, 0);
+            target.writeBuffer.SetColorAttachment(this.brdf, this.gl.COLOR_ATTACHMENT0);
 
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     
@@ -304,7 +304,7 @@ export class Skybox
             // Cleanup.
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-            target.writeBuffer.SetColorAttachment(this.scene.writeTexture, 0);
+            target.writeBuffer.SetColorAttachment(this.scene.writeTexture, this.gl.COLOR_ATTACHMENT0);
             target.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
         }
         
