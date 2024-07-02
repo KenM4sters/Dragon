@@ -10,6 +10,7 @@ import skyboxFrag from "../resources/shaders/skybox.frag?raw";
 import rawFrag from "../resources/shaders/color.frag?raw";
 import texFrag from "../resources/shaders/texture.frag?raw";
 import pbrFrag from "../resources/shaders/physical_material.frag?raw";
+import pbrVert from "../resources/shaders/physical_material.vert?raw";
 
 
 export interface PhysicalMateralProps
@@ -105,7 +106,7 @@ export class PhysicalMaterial extends Material
     {
         super();
 
-        this.shader = new Shader(mvpVert, pbrFrag);
+        this.shader = new Shader(pbrVert, pbrFrag);
 
         if(props.albedo) this.albedo = props.albedo;
         if(props.metallic) this.metallic = props.metallic;

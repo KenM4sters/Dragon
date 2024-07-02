@@ -15,8 +15,8 @@ import { Skybox } from "./skybox";
 import { TextureImageData } from 'three/src/textures/types.js';
 
 
+import sceneDepthVert from "../resources/shaders/scene_depth.vert?raw";
 import sceneDepthFrag from "../resources/shaders/scene_depth.frag?raw";
-import sceneDepthVert from "../resources/shaders/scene_depth.frag?raw";
 
 
 /**
@@ -89,13 +89,13 @@ export class Scene
             nChannels: this.gl.DEPTH_COMPONENT,
             type: this.gl.FLOAT,
             data: null,
-            samplerInfo: 
+            samplerInfo:  
             {      
                 dimension: this.gl.TEXTURE_2D,      
-                minFilter: this.gl.LINEAR,
-                magFilter: this.gl.LINEAR,
-                sWrap: this.gl.REPEAT,
-                tWrap: this.gl.REPEAT,
+                minFilter: this.gl.NEAREST,
+                magFilter: this.gl.NEAREST,
+                sWrap: this.gl.CLAMP_TO_EDGE,
+                tWrap: this.gl.CLAMP_TO_EDGE,
             }
         }
 
@@ -110,8 +110,8 @@ export class Scene
 
         this.depthBuffer = new Framebuffer(depthBufferInfo);
 
-        this.depthViewMatrix = glm.mat4.lookAt(glm.mat4.create(), [100, 20, 20], [0, 0, 0], [0, 1, 0]);
-        this.depthProjectionMatrix = glm.mat4.perspective(glm.mat4.create(), glm.glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 100);
+        this.depthViewMatrix = glm.mat4.lookAt(glm.mat4.create(), [8, 2, 3], [0, 0, 0], [0, 1, 0]);
+        this.depthProjectionMatrix = glm.mat4.ortho(glm.mat4.create(), -10, 10, -10, 10, 1.0, 100);
     }
 
     /**
@@ -120,25 +120,32 @@ export class Scene
      */
     public Render(elapsedTime: number, timeStep: number): void 
     {        
-
         this.camera.Update(elapsedTime, timeStep);
 
         this.renderTarget.viewport = {width: 1024, height: 1024};
         this.renderTarget.writeBuffer = this.depthBuffer;
+        this.renderTarget.depthFunc = this.gl.LEQUAL;
         this.depthBuffer.SetColorAttachment(this.depthTexture, this.gl.DEPTH_ATTACHMENT);
-        this.gl.drawBuffers([this.gl.NONE]);
+        // this.gl.drawBuffers([this.gl.NONE]);
+        // this.gl.readBuffer(this.gl.NONE);
+        this.renderer.SetRenderTarget(this.renderTarget);
 
-        this.DrawScene(this.depthShader);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.DrawSceneToDepthBuffer();
         
         this.renderer.End();
         
         this.renderTarget.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
         this.renderTarget.writeBuffer = this.sceneBuffer;
+        this.renderTarget.depthFunc = this.gl.LEQUAL;
         this.sceneBuffer.SetColorAttachment(this.writeTexture, this.gl.COLOR_ATTACHMENT0);
         this.renderer.SetRenderTarget(this.renderTarget);
 
         const children = this.GetAllChildren();
 
+
+        // this.camera.SetViewMatrix(this.depthViewMatrix);
+        // this.camera.SetProjectionMatrix(this.depthProjectionMatrix);
         for(const mesh of children.meshes) 
         {
             mesh.UpdateUniforms(this);
@@ -149,31 +156,68 @@ export class Scene
             } 
         }
 
-        this.DrawScene();
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.DrawSceneToWriteBuffer();
 
         this.renderer.End();
     }
 
-
-    public DrawScene(depthShader ?: Shader) : void 
+    private DrawSceneToDepthBuffer() : void 
     {
         const children = this.GetAllChildren();
 
-        if(!depthShader) 
+        this.gl.useProgram(this.depthShader.GetId().val);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.depthShader.GetId().val, "projection"), false, this.depthProjectionMatrix);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.depthShader.GetId().val, "view"), false, this.depthViewMatrix);
+        
+        for(const mesh of children.meshes)  
+        {   
+            let modelMatrix = glm.mat4.create();
+            modelMatrix = glm.mat4.fromQuat(modelMatrix, mesh.rotation);
+            modelMatrix = glm.mat4.scale(glm.mat4.create(), modelMatrix, mesh.scale);
+            modelMatrix = glm.mat4.translate(glm.mat4.create(), modelMatrix, mesh.position);
+
+            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.depthShader.GetId().val, "model"), false, modelMatrix);
+
+            if(mesh.material instanceof PhysicalMaterial) 
+            {      
+                if(mesh.geometry instanceof BoxGeometry) 
+                {
+                    this.renderer.Draw(mesh.geometry.GetVertexArray(), this.depthShader, 36);
+                }  
+                else if(mesh.geometry instanceof SphereGeometry) 
+                {
+                    const vao = mesh.geometry.GetVertexArray();
+                    const EBO = vao.GetIndexBuffer();
+
+                    this.gl.bindVertexArray(vao.GetId().val);
+                    this.gl.useProgram(this.depthShader.GetId().val);
+
+                    if(EBO) 
+                    {
+                        this.gl.drawElements(this.gl.TRIANGLES, EBO.GetUniqueSize() / EBO.GetUniqueIndices().BYTES_PER_ELEMENT, this.gl.UNSIGNED_SHORT, EBO.GetUniqueOffset());
+                    }
+                }     
+            }
+        } 
+    }
+
+    private DrawSceneToWriteBuffer() : void 
+    {
+        const children = this.GetAllChildren();
+
+        if(this.skybox) 
         {
-            if(this.skybox) 
-            {
-                this.skybox.GetCube().UpdateUniforms(this);
-                
-                const geo = this.skybox.GetCube().geometry;
-                const mat = this.skybox.GetCube().material;
-    
-                if(geo instanceof BoxGeometry && mat instanceof SkyboxMaterial) 
-                {   
-                    this.renderer.Draw(geo.GetVertexArray(), mat.GetShader(), 36);
-                }
-            } 
-        }
+            this.skybox.GetCube().UpdateUniforms(this);
+            
+            const geo = this.skybox.GetCube().geometry;
+            const mat = this.skybox.GetCube().material;
+
+            if(geo instanceof BoxGeometry && mat instanceof SkyboxMaterial) 
+            {   
+                this.renderer.Draw(geo.GetVertexArray(), mat.GetShader(), 36);
+            }
+        } 
         
         for(const mesh of children.meshes)  
         {   
@@ -181,34 +225,13 @@ export class Scene
             {      
                 if(mesh.geometry instanceof BoxGeometry) 
                 {
-                    let shader;
-
-                    if(depthShader) 
-                    {
-                        shader = this.depthShader;
-                    } 
-                    else 
-                    {
-                        shader = mesh.material.GetShader();
-                    }
-
-                    this.renderer.Draw(mesh.geometry.GetVertexArray(), shader, 36);
+                    this.renderer.Draw(mesh.geometry.GetVertexArray(), mesh.material.GetShader(), 36);
                 }  
                 else if(mesh.geometry instanceof SphereGeometry) 
                 {
                     const vao = mesh.geometry.GetVertexArray();
                     const EBO = vao.GetIndexBuffer();
-
-                    let shader;
-
-                    if(depthShader) 
-                    {
-                        shader = this.depthShader;
-                    } 
-                    else 
-                    {
-                        shader = mesh.material.GetShader();
-                    }
+                    const shader = mesh.material.GetShader();
 
                     this.gl.bindVertexArray(vao.GetId().val);
                     this.gl.useProgram(shader.GetId().val);
@@ -281,8 +304,6 @@ export class Scene
         return {meshes: this.meshes, lights: this.lights};
     }
 
-
-
     public Resize(width: number, height: number): void 
     {
         this.camera.Resize(width, height);
@@ -327,13 +348,13 @@ export class Scene
     public skybox : Skybox | null = null;
     public gl : WebGL2RenderingContext;
 
+    public depthTexture : RawTexture2D;
+    public depthViewMatrix : glm.mat4;
+    public depthProjectionMatrix : glm.mat4;
+    public depthShader : Shader = new Shader(sceneDepthVert, sceneDepthFrag);
+
     private sceneBuffer : Framebuffer;
     private depthBuffer : Framebuffer;
-    private depthTexture : RawTexture2D;
-    private depthViewMatrix : glm.mat4;
-    private depthProjectionMatrix : glm.mat4;
-    private depthShader : Shader = new Shader(sceneDepthVert, sceneDepthFrag);
-
     private meshes : Array<Mesh> = new Array<Mesh>();
 
 }; 

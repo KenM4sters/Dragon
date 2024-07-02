@@ -99,9 +99,14 @@ export class TurnTableController extends CameraController
 
     private OnMouseDown(event : MouseEvent) : void 
     {
-        this.isDragging = true;
-        
-        this.previousMousePosition = [event.clientX, event.clientY];
+        let clickedElement = event.target as HTMLElement;
+
+        if(clickedElement.classList.contains("landing"))             
+        {
+            event.preventDefault();
+            this.isDragging = true;   
+            this.previousMousePosition = [event.clientX, event.clientY];
+        }
     }
 
 

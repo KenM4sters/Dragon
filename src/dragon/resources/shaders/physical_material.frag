@@ -16,20 +16,25 @@ struct Light {
 };
 
 out vec4 FragColor;
-in vec2 vUV;
+
 in vec3 vModelPosition;
 in vec3 vNormal;
+in vec2 vUV;
+in vec4 vLightSpaceFragPosition; 
+
 
 uniform vec4 uColor;
 uniform Light uLight;
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
 
+uniform sampler2D uShadowMap;
+uniform sampler2D uBRDF;
 uniform samplerCube uConvolutedMap;
 uniform samplerCube uPrefilteredMap;
-uniform sampler2D uBRDF;
 
 const float PI = 3.14159265359;
+float ShadowCalculation(vec4 lightSpaceFragPosition);
 float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
@@ -93,10 +98,33 @@ void main()
     
     vec3 ambient = (kD * diffuse + finalSpecular) * uMaterial.AO; 
     vec3 color = ambient + Lo; 
+
+    float shadow = ShadowCalculation(vLightSpaceFragPosition);
+
+    color -= vec3(shadow);  
+
     //================================================================
 
+    // FragColor = vec4(texture(uShadowMap, vUV).rrr, 1.0);
     FragColor = vec4(color, 1.0);
 
+}
+
+
+float ShadowCalculation(vec4 lightSpaceFragPosition) 
+{
+    // perform perspective divide
+    vec3 projCoords = lightSpaceFragPosition.xyz / lightSpaceFragPosition.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(uShadowMap, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
 }
 
 vec3 FresnelSchlick(float cosTheta, vec3 F0)

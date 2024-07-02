@@ -44,12 +44,16 @@ export class Renderer
         this.gl.useProgram(null);
         this.gl.activeTexture(this.gl.TEXTURE0)
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
         this.gl.activeTexture(this.gl.TEXTURE1)
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-        this.gl.activeTexture(this.gl.TEXTURE0)
-        this.gl.bindTexture(this.gl.TEXTURE_3D, null);
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_3D, null);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
+        this.gl.activeTexture(this.gl.TEXTURE2)
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
+        this.gl.activeTexture(this.gl.TEXTURE3);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, null);
     }
 
     public gl : WebGL2RenderingContext;

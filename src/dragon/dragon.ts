@@ -1,3 +1,4 @@
+import { Frontend } from "../frontend";
 import Assets from "./assets";
 import { Graphics } from "./graphics/graphics";
 import { Interface } from "./interface";
@@ -28,14 +29,15 @@ export class Dragon
         
         this.assets.LoadAllAssets(() => {
             script.Initialize(); 
-            this.isReady = true;
+            this.frontend = new Frontend();
             this.interface = new Interface(this);
+            this.isReady = true;
         });
 
         window.addEventListener("resize", () => this.OnResize());
 
         if(!this.isReady) 
-        {
+        {   
             this.DrawPreloader();
         }
     }
@@ -62,13 +64,19 @@ export class Dragon
         this.timeStep = elapsedTime - this.lastFrame;
         this.lastFrame = elapsedTime;
 
-
         if(this.animationCallback && this.isReady) 
         {
+            // Clean the Preloader up (destroy gl resources, DOM elements etc if it hasn't
+            // been cleaned up yet.
+            if(!this.preloader.isDestroyed) 
+            {
+                this.preloader.Destroy();
+            }
+
             this.animationCallback(elapsedTime, this.timeStep);
         }
         else         
-        {
+        {            
             this.preloader.Update(this.elapsedTime, this.timeStep);
         }
 
@@ -118,8 +126,9 @@ export class Dragon
     public graphics : Graphics;
     private script : IScript;
     private assets : Assets;
-    private interface !: Interface;
     private preloader : Preloader;
+    private interface !: Interface;
+    private frontend !: Frontend;
 
     private isReady : boolean = false;
     private animationCallback !: ((elapsedTime :number, timeStep : number) => void) | undefined;

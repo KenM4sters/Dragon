@@ -23,31 +23,51 @@ export class Frontend
 
     this.ViewProject(projectWrapper, document.querySelector(".mammoth2d") as HTMLElement, this.projects.mammoth);
 
+    window.addEventListener('click', (event : MouseEvent) => 
+      {          
+        const element = event.target as HTMLElement;
 
-    window.addEventListener('DOMContentLoaded', () => 
-    {
-      window.addEventListener('click', (event : MouseEvent) => 
+        if(element.classList.contains("mammoth2d")) 
         {
-          const element = event.target as HTMLElement;
+          this.ViewProject(projectWrapper, element, this.projects.mammoth);
+        }
+        else if(element.classList.contains("silverback")) 
+        {
+          this.ViewProject(projectWrapper, element, this.projects.silverback);
+        }
+        else if(element.classList.contains("dragon")) 
+        {
+          this.ViewProject(projectWrapper, element, this.projects.dragon);
+        }
+        else if(element.classList.contains("reaction")) 
+        {
+          this.ViewProject(projectWrapper, element, this.projects.reaction);
+        }
+      })
 
-          if(element.classList.contains("mammoth2d")) 
+
+      let aboutToggle = document.querySelector(".about-toggle") as HTMLElement;
+      let aboutInfo = document.querySelector(".about-container") as HTMLElement;
+
+      aboutToggle.addEventListener("click", () => 
+      {        
+          if(this.viewingAbout) 
           {
-            this.ViewProject(projectWrapper, element, this.projects.mammoth);
+            this.viewingAbout = false;
+            aboutInfo.classList.remove("show-about");
+            aboutInfo.classList.add("hide-about");
+            aboutToggle.classList.remove("active-toggle");
+            aboutToggle.classList.add("inactive-toggle");
           }
-          else if(element.classList.contains("silverback")) 
+          else 
           {
-            this.ViewProject(projectWrapper, element, this.projects.silverback);
+            this.viewingAbout = true;
+            aboutInfo.classList.remove("hide-about");
+            aboutInfo.classList.add("show-about");
+            aboutToggle.classList.remove("inactive-toggle");
+            aboutToggle.classList.add("active-toggle");
           }
-          else if(element.classList.contains("dragon")) 
-          {
-            this.ViewProject(projectWrapper, element, this.projects.dragon);
-          }
-          else if(element.classList.contains("reaction")) 
-          {
-            this.ViewProject(projectWrapper, element, this.projects.reaction);
-          }
-        })
-    })
+      })
   }
 
 
@@ -68,5 +88,6 @@ export class Frontend
   }
 
   private projects : Projects;
+  private viewingAbout : boolean = false;
   
 };

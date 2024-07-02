@@ -1,6 +1,7 @@
 import { FPSController, TurnTableController } from "./dragon/controller";
 import * as DRAGON from "./dragon/export";
 import * as glm from "gl-matrix";
+import { Frontend } from "./frontend";
 
 
 /**

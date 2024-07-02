@@ -71,7 +71,6 @@ export class Mesh
      */
     public UpdateUniforms(scene : Scene) : void 
     {
-
         const gl = scene.gl;
         const lights = scene.lights;
         const skybox = scene.skybox;
@@ -89,24 +88,30 @@ export class Mesh
             
             if(skybox) 
             {
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, skybox.GetBRDF().GetId().val);
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, scene.depthTexture.GetId().val);
 
                 gl.activeTexture(gl.TEXTURE2);
+                gl.bindTexture(gl.TEXTURE_2D, skybox.GetBRDF().GetId().val);
+
+                gl.activeTexture(gl.TEXTURE3);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, skybox.GetConvolutedMap().GetId().val);
                 
-                gl.activeTexture(gl.TEXTURE3);
+                gl.activeTexture(gl.TEXTURE4);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, skybox.GetPrefilteredMap().GetId().val);
             }
             
             gl.useProgram(shader.GetId().val);
-            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uBRDF"), 0);
-            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uConvolutedMap"), 2);
-            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uPrefilteredMap"), 3);
+            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uShadowMap"), 1);
+            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uBRDF"), 2);
+            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uConvolutedMap"), 3);
+            gl.uniform1i(gl.getUniformLocation(shader.GetId().val, "uPrefilteredMap"), 4);
             
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "model"), false, modelMatrix);
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "view"), false, camera.GetViewMatrix());
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "projection"), false, camera.GetProjectionMatrix());
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "lightSpaceProjection"), false, scene.depthProjectionMatrix);
+            gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "lightSpaceView"), false, scene.depthViewMatrix);
             gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uCameraPosition"), camera.position);
     
             gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uMaterial.Albedo"), material.albedo);
