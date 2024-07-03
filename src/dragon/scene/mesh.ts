@@ -113,6 +113,7 @@ export class Mesh
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "lightSpaceProjection"), false, scene.depthProjectionMatrix);
             gl.uniformMatrix4fv(gl.getUniformLocation(shader.GetId().val, "lightSpaceView"), false, scene.depthViewMatrix);
             gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uCameraPosition"), camera.position);
+            gl.uniform2fv(gl.getUniformLocation(shader.GetId().val, "uShadowMapResolution"), [gl.canvas.width, gl.canvas.height]);
     
             gl.uniform3fv(gl.getUniformLocation(shader.GetId().val, "uMaterial.Albedo"), material.albedo);
             gl.uniform1f(gl.getUniformLocation(shader.GetId().val, "uMaterial.Metallic"), material.metallic);

@@ -41,17 +41,17 @@ export class Script extends DRAGON.IScript
         let matHM = new DRAGON.PhysicalMaterial({albedo: [1.2, 1.2, 1.2], ao: 1.0, roughenss: 0.1, metallic: 0.9});
         let geoHM = new DRAGON.SphereGeometry(0.2, 50, 50);
         let sphereHM = new DRAGON.Mesh(geoHM, matHM);
-        sphereHM.position = [0.0, 0.0, -2.0];
+        sphereHM.position = [0.0, -0.2, -2.0];
 
         let matHR = new DRAGON.PhysicalMaterial({albedo: [1.0, 0.0, 0.0], ao: 1.0, roughenss: 0.1, metallic: 0.9});
         let geoHR = new DRAGON.SphereGeometry(0.2, 50, 50);
         let sphereHR = new DRAGON.Mesh(geoHR, matHR);
-        sphereHR.position = [0.0, 0.0, -1.5];
+        sphereHR.position = [0.0, -0.2, -1.5];
 
         let matMM = new DRAGON.PhysicalMaterial({albedo: [1.5, 1.5, 1.5], ao: 1.0, roughenss: 0.9, metallic: 0.1});
         let geoMM = new DRAGON.SphereGeometry(0.2, 50, 50);
         let sphereMM = new DRAGON.Mesh(geoMM, matMM);
-        sphereMM.position = [0.0, 0.0, -1.0];
+        sphereMM.position = [0.0, -0.2, -1.0];
 
 
         let floorMat = new DRAGON.PhysicalMaterial({albedo: [1.5, 1.5, 1.5], ao: 1.0, roughenss: 0.8, metallic: 0.2});
@@ -80,7 +80,7 @@ export class Script extends DRAGON.IScript
         this.dragon.scene.Add(backWallMesh);
         this.dragon.scene.Add(sideWallMesh);
 
-        const pointLight = new DRAGON.PointLight([100, 50, 30], [1.0, 1.0, 1.0], 0);
+        const pointLight = new DRAGON.PointLight([3, 1, 1], [1.0, 1.0, 1.0], 0.0);
         
         this.dragon.scene.Add(pointLight);
         

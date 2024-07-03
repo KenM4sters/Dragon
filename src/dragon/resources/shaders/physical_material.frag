@@ -27,14 +27,14 @@ uniform vec4 uColor;
 uniform Light uLight;
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
-
+uniform vec2 uShadowMapResolution;
 uniform sampler2D uShadowMap;
 uniform sampler2D uBRDF;
 uniform samplerCube uConvolutedMap;
 uniform samplerCube uPrefilteredMap;
 
 const float PI = 3.14159265359;
-float ShadowCalculation(vec4 lightSpaceFragPosition);
+float ShadowCalculation(vec4 lightSpaceFragPosition, vec3 lightDir, vec3 normal);
 float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
@@ -95,23 +95,20 @@ void main()
     // vec3 finalSpecular = prefilteredColor * (FR * envBRDF.x + envBRDF.y);
     vec3 finalSpecular = prefilteredColor * (FR);
 
-    
     vec3 ambient = (kD * diffuse + finalSpecular) * uMaterial.AO; 
     vec3 color = ambient + Lo; 
+    //================================================================
 
-    float shadow = ShadowCalculation(vLightSpaceFragPosition);
+    float shadow = ShadowCalculation(vLightSpaceFragPosition, L, N);
 
     color -= vec3(shadow);  
 
-    //================================================================
-
-    // FragColor = vec4(texture(uShadowMap, vUV).rrr, 1.0);
     FragColor = vec4(color, 1.0);
 
 }
 
 
-float ShadowCalculation(vec4 lightSpaceFragPosition) 
+float ShadowCalculation(vec4 lightSpaceFragPosition, vec3 lightDir, vec3 normal) 
 {
     // perform perspective divide
     vec3 projCoords = lightSpaceFragPosition.xyz / lightSpaceFragPosition.w;
@@ -121,8 +118,24 @@ float ShadowCalculation(vec4 lightSpaceFragPosition)
     float closestDepth = texture(uShadowMap, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.005);  
+    vec2 texelSize = 1.0 / uShadowMapResolution;
+    float shadow = 0.0;
+    for(int i = -1; i <= 1; i++) 
+    {
+        for(int j = -1; j <= 1; j++) 
+        {
+            float pcfDepth = texture(uShadowMap, projCoords.xy + vec2(i, j) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 0.02 : 0.0;
+        }
+    }
+
+    shadow /= 9.0;
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
 
     return shadow;
 }

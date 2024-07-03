@@ -49,7 +49,7 @@ export class Scene
                 sWrap: this.gl.REPEAT,
                 tWrap: this.gl.REPEAT,
             }
-        };
+        }
 
         this.writeTexture = new RawTexture2D(writeTexInfo);
         
@@ -64,7 +64,7 @@ export class Scene
                 format: this.gl.DEPTH24_STENCIL8,
                 attachmentType: this.gl.DEPTH_STENCIL_ATTACHMENT 
             }
-        };
+        }
 
         const sceneStageInfo : RenderTargetCreateInfo = 
         {
@@ -84,8 +84,8 @@ export class Scene
         {
             dimension: this.gl.TEXTURE_2D,
             format: this.gl.DEPTH_COMPONENT32F,
-            width: 1024,
-            height: 1024,
+            width: 2048,
+            height: 2048,
             nChannels: this.gl.DEPTH_COMPONENT,
             type: this.gl.FLOAT,
             data: null,
@@ -106,12 +106,13 @@ export class Scene
             targetTexture: this.writeTexture,
             attachment: this.gl.DEPTH_ATTACHMENT,
             renderBufferCreateInfo: null
-        };
+        }
 
         this.depthBuffer = new Framebuffer(depthBufferInfo);
 
-        this.depthViewMatrix = glm.mat4.lookAt(glm.mat4.create(), [8, 2, 3], [0, 0, 0], [0, 1, 0]);
+        this.depthViewMatrix = glm.mat4.lookAt(glm.mat4.create(), [3, 1.25, 1.5], [0, 0, 0], [0, 1, 0]);
         this.depthProjectionMatrix = glm.mat4.ortho(glm.mat4.create(), -10, 10, -10, 10, 1.0, 100);
+        // this.depthProjectionMatrix = glm.mat4.perspective(glm.mat4.create(), glm.glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 100);
     }
 
     /**
@@ -122,33 +123,33 @@ export class Scene
     {        
         this.camera.Update(elapsedTime, timeStep);
 
-        this.renderTarget.viewport = {width: 1024, height: 1024};
+        this.renderTarget.viewport = {width: 2048, height: 2048};
         this.renderTarget.writeBuffer = this.depthBuffer;
         this.renderTarget.depthFunc = this.gl.LEQUAL;
         this.depthBuffer.SetColorAttachment(this.depthTexture, this.gl.DEPTH_ATTACHMENT);
-        // this.gl.drawBuffers([this.gl.NONE]);
-        // this.gl.readBuffer(this.gl.NONE);
+        this.gl.drawBuffers([this.gl.NONE]);
+        this.gl.readBuffer(this.gl.NONE);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.cullFace(this.gl.BACK);
         this.renderer.SetRenderTarget(this.renderTarget);
+        this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
 
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.DrawSceneToDepthBuffer();
         
         this.renderer.End();
+        this.gl.disable(this.gl.CULL_FACE);
         
         this.renderTarget.viewport = {width: this.gl.canvas.width, height: this.gl.canvas.height};
         this.renderTarget.writeBuffer = this.sceneBuffer;
         this.renderTarget.depthFunc = this.gl.LEQUAL;
         this.sceneBuffer.SetColorAttachment(this.writeTexture, this.gl.COLOR_ATTACHMENT0);
         this.renderer.SetRenderTarget(this.renderTarget);
-
+        
         const children = this.GetAllChildren();
-
-
-        // this.camera.SetViewMatrix(this.depthViewMatrix);
-        // this.camera.SetProjectionMatrix(this.depthProjectionMatrix);
+        
         for(const mesh of children.meshes) 
-        {
-            mesh.UpdateUniforms(this);
+            {
+                mesh.UpdateUniforms(this);
 
             if(mesh.userUpdateCallback) 
             {

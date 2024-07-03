@@ -1,6 +1,6 @@
 #version 300 es
 
-in vec3 aPositon;
+in vec3 aPosition;
 
 uniform mat4 projection;
 uniform mat4 view;
