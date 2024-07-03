@@ -37,7 +37,7 @@ export class Preloader
     private Rotate(elapsedTime : number, timeStep : number) : void 
     {
         const axis = glm.vec3.fromValues(1, -1, 0);
-        const angle = elapsedTime * 45 * 0.005;         
+        const angle = elapsedTime * 45 * 0.0005;         
         const quat = glm.quat.setAxisAngle(this.cube.rotation, axis, glm.glMatrix.toRadian(angle));
         this.cube.rotation = glm.quat.normalize(quat, quat);
     }
