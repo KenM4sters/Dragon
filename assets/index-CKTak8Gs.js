@@ -92,7 +92,7 @@ var ni=Object.defineProperty;var si=(r,t,e)=>t in r?ni(r,t,{enumerable:!0,config
             </p1>
             <p1>
                 I've always enjoyed developing game engines like my PBR renderer and 3D Sandbox World, but ultimately the part that
-                I find the most interesting about game development is the configuring the graphics pipeline and writing
+                I find the most interesting about game development is configuring the graphics pipeline and writing
                 shader programs to produce sensational effects with as little overhead as possible. 
             </p1>
             <p1>
