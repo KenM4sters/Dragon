@@ -7,7 +7,8 @@ out vec4 FragColor;
 uniform sampler2D uToneMappedTexture;
 uniform vec2 uResolution;
 
-vec3 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution) {
+vec3 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution) 
+{
     vec2 inverse_resolution = 1.0 / resolution;
     vec3 rgbNW = texture(tex, (fragCoord + vec2(-1.0, -1.0)) * inverse_resolution).rgb;
     vec3 rgbNE = texture(tex, (fragCoord + vec2(1.0, -1.0)) * inverse_resolution).rgb;
@@ -31,9 +32,13 @@ vec3 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution) {
     vec3 rgbB = rgbA * 0.5 + 0.25 * (texture(tex, fragCoord * inverse_resolution + dir * -0.5).rgb +
                                      texture(tex, fragCoord * inverse_resolution + dir * 0.5).rgb);
     float lumaB = dot(rgbB, luma);
-    if ((lumaB < lumaMin) || (lumaB > lumaMax)) {
+
+    if ((lumaB < lumaMin) || (lumaB > lumaMax)) 
+    {
         return rgbA;
-    } else {
+    } 
+    else 
+    {
         return rgbB;
     }
 }
